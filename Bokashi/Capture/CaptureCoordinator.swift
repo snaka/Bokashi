@@ -3,13 +3,9 @@ import BokashiCore
 
 @MainActor
 final class CaptureCoordinator {
-    private static let permissionPromptedKey = "BokashiScreenRecordingPromptedOnce"
-
     private let captureService = CaptureService()
 
     func captureFullScreen() async {
-        triggerFirstRunPromptIfNeeded()
-
         do {
             let image = try await captureService.captureMainDisplay()
             let url = SaveDestination.desktopURL(for: CaptureFilename.make())
@@ -19,39 +15,7 @@ final class CaptureCoordinator {
                 NSSound.beep()
             }
         } catch {
-            handleCaptureError(error)
-        }
-    }
-
-    private func triggerFirstRunPromptIfNeeded() {
-        let defaults = UserDefaults.standard
-        guard !defaults.bool(forKey: Self.permissionPromptedKey) else { return }
-        defaults.set(true, forKey: Self.permissionPromptedKey)
-        _ = ScreenRecordingPermission.request()
-    }
-
-    private func handleCaptureError(_ error: Error) {
-        if !ScreenRecordingPermission.isGranted {
-            showPermissionAlert()
-        } else {
             presentError(error)
-        }
-    }
-
-    private func showPermissionAlert() {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "Screen Recording permission required"
-        alert.informativeText = """
-            Bokashi needs Screen Recording access to capture your screen.
-
-            If you have already enabled it in System Settings, quit and reopen \
-            Bokashi for the change to take effect.
-            """
-        alert.addButton(withTitle: "Open System Settings")
-        alert.addButton(withTitle: "Cancel")
-        if alert.runModal() == .alertFirstButtonReturn {
-            ScreenRecordingPermission.openSystemSettings()
         }
     }
 
