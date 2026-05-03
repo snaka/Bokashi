@@ -1,0 +1,41 @@
+name: Bokashi
+options:
+  bundleIdPrefix: com.snaka
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    ENABLE_HARDENED_RUNTIME: YES
+
+packages:
+  BokashiCore:
+    path: Packages/BokashiCore
+
+targets:
+  Bokashi:
+    type: application
+    platform: macOS
+    sources:
+      - path: Bokashi
+    dependencies:
+      - package: BokashiCore
+    info:
+      path: Bokashi/Info.plist
+      properties:
+        LSUIElement: true
+        CFBundleDisplayName: Bokashi
+        CFBundleShortVersionString: "0.0.0"
+        CFBundleVersion: "1"
+        NSHumanReadableCopyright: "Copyright © 2026 snaka. MIT License."
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.snaka.Bokashi
+        PRODUCT_NAME: Bokashi
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: Bokashi/Bokashi.entitlements
+        COMBINE_HIDPI_IMAGES: YES
