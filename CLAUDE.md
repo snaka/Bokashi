@@ -56,15 +56,31 @@ swift test --package-path Packages/BokashiCore
   `KeyboardShortcuts` / Carbon `RegisterEventHotKey`.
 - The app is configured as `LSUIElement` (menubar-only, no Dock icon).
 
-### Dev-only gotcha: Screen Recording permission resets on rebuild
+### Dev-only gotcha: Screen Recording permission and ad-hoc signing
 
 Each Xcode build produces a new ad-hoc signing identity. macOS's TCC
-database keys Screen Recording grants by signing identity, so every
-rebuild appears as a "new app" and silently loses permission — even
-though System Settings still shows the toggle as ON. The fix is to
-toggle Bokashi OFF then ON again in *System Settings → Privacy &
-Security → Screen Recording* after each rebuild. Production builds
-signed with a stable Developer ID do not have this issue.
+database keys Screen Recording grants by *signing identity hash*, so
+every rebuild appears as a "new app" and silently loses permission —
+even though System Settings still shows the Bokashi toggle as ON.
+
+When this happens, both `CGPreflightScreenCaptureAccess()` returns
+`false` and `SCShareableContent.current` throws, regardless of the
+Settings UI state. macOS will also auto-trigger its own system prompt
+on top of any in-app alert, producing two stacked dialogs.
+
+The reliable reset, when permission gets stuck, is:
+
+```sh
+# 1. Stop Bokashi in Xcode (or Cmd+Q from the menubar)
+# 2. Clear the TCC entry entirely
+tccutil reset ScreenCapture com.snaka.Bokashi
+```
+
+After the reset, Bokashi disappears from the Screen Recording list in
+System Settings. Run the app again (⌘R), trigger a capture, follow
+the system prompt to enable, and click *Quit & Reopen* when macOS
+offers to restart Bokashi. Production builds signed with a stable
+Developer ID do not need any of this.
 
 ## What goes where
 
