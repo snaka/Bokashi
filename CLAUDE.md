@@ -56,6 +56,16 @@ swift test --package-path Packages/BokashiCore
   `KeyboardShortcuts` / Carbon `RegisterEventHotKey`.
 - The app is configured as `LSUIElement` (menubar-only, no Dock icon).
 
+### Dev-only gotcha: Screen Recording permission resets on rebuild
+
+Each Xcode build produces a new ad-hoc signing identity. macOS's TCC
+database keys Screen Recording grants by signing identity, so every
+rebuild appears as a "new app" and silently loses permission — even
+though System Settings still shows the toggle as ON. The fix is to
+toggle Bokashi OFF then ON again in *System Settings → Privacy &
+Security → Screen Recording* after each rebuild. Production builds
+signed with a stable Developer ID do not have this issue.
+
 ## What goes where
 
 | Concern | Location |
