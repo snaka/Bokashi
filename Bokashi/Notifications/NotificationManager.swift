@@ -7,6 +7,7 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
 
     private static let revealActionIdentifier = "BOKASHI_REVEAL_IN_FINDER"
     private static let savedCategoryIdentifier = "BOKASHI_SCREENSHOT_SAVED"
+    private static let deniedAlertShownKey = "BokashiNotificationDeniedAlertShown"
 
     func setUp() {
         let center = UNUserNotificationCenter.current()
@@ -24,14 +25,27 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             options: []
         )
         center.setNotificationCategories([category])
-
-        Task {
-            _ = try? await center.requestAuthorization(options: [.alert, .sound])
-        }
     }
 
     @discardableResult
     func notifyScreenshotSaved(at fileURL: URL) async -> Bool {
+        let center = UNUserNotificationCenter.current()
+        let settings = await center.notificationSettings()
+
+        switch settings.authorizationStatus {
+        case .notDetermined:
+            NSApp.activate(ignoringOtherApps: true)
+            let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+            guard granted else { return false }
+        case .denied:
+            presentDeniedAlertIfNeeded()
+            return false
+        case .authorized, .provisional, .ephemeral:
+            break
+        @unknown default:
+            return false
+        }
+
         let content = UNMutableNotificationContent()
         content.title = "Screenshot saved"
         content.body = fileURL.lastPathComponent
@@ -44,10 +58,32 @@ final class NotificationManager: NSObject, UNUserNotificationCenterDelegate {
             trigger: nil
         )
         do {
-            try await UNUserNotificationCenter.current().add(request)
+            try await center.add(request)
             return true
         } catch {
             return false
+        }
+    }
+
+    private func presentDeniedAlertIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.deniedAlertShownKey) else { return }
+        defaults.set(true, forKey: Self.deniedAlertShownKey)
+
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "Notifications are disabled for Bokashi"
+        alert.informativeText = """
+            Screenshots are still saved to your Desktop, but Bokashi cannot show \
+            a banner to confirm them. Enable notifications in System Settings if \
+            you want them back.
+            """
+        alert.addButton(withTitle: "Open System Settings")
+        alert.addButton(withTitle: "Not Now")
+        if alert.runModal() == .alertFirstButtonReturn {
+            if let url = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension") {
+                NSWorkspace.shared.open(url)
+            }
         }
     }
 
