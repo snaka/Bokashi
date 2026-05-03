@@ -3,14 +3,17 @@ import BokashiCore
 
 @main
 struct BokashiApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
     var body: some Scene {
         MenuBarExtra("Bokashi", systemImage: "camera.viewfinder") {
             Text("Bokashi v\(BokashiCore.version)")
             Divider()
-            Button("Capture (not yet implemented)") {
-                // Implemented in M1
+            Button("Capture Full Screen") {
+                Task { @MainActor in
+                    await appDelegate.captureCoordinator.captureFullScreen()
+                }
             }
-            .disabled(true)
             Divider()
             Button("Quit Bokashi") {
                 NSApplication.shared.terminate(nil)
