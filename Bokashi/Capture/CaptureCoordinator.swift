@@ -8,7 +8,7 @@ final class CaptureCoordinator {
     private let captureService = CaptureService()
 
     func captureFullScreen() async {
-        guard ensurePermission() else { return }
+        triggerFirstRunPromptIfNeeded()
 
         do {
             let image = try await captureService.captureMainDisplay()
@@ -19,20 +19,26 @@ final class CaptureCoordinator {
                 NSSound.beep()
             }
         } catch {
+            handleCaptureError(error)
+        }
+    }
+
+    private func triggerFirstRunPromptIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard !defaults.bool(forKey: Self.permissionPromptedKey) else { return }
+        defaults.set(true, forKey: Self.permissionPromptedKey)
+        _ = ScreenRecordingPermission.request()
+    }
+
+    private func handleCaptureError(_ error: Error) {
+        if !ScreenRecordingPermission.isGranted {
+            showPermissionAlert()
+        } else {
             presentError(error)
         }
     }
 
-    private func ensurePermission() -> Bool {
-        if ScreenRecordingPermission.isGranted { return true }
-
-        let defaults = UserDefaults.standard
-        if !defaults.bool(forKey: Self.permissionPromptedKey) {
-            defaults.set(true, forKey: Self.permissionPromptedKey)
-            _ = ScreenRecordingPermission.request()
-            return false
-        }
-
+    private func showPermissionAlert() {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.messageText = "Screen Recording permission required"
@@ -47,7 +53,6 @@ final class CaptureCoordinator {
         if alert.runModal() == .alertFirstButtonReturn {
             ScreenRecordingPermission.openSystemSettings()
         }
-        return false
     }
 
     private func presentError(_ error: Error) {
