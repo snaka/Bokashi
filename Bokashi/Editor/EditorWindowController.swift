@@ -46,8 +46,8 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
 
         let bounds = NSScreen.main?.visibleFrame.size ?? CGSize(width: 1200, height: 800)
         let toolbarHeight: CGFloat = 56
-        let maxImageWidth = bounds.width * 2 / 3
-        let maxImageHeight = bounds.height * 2 / 3
+        let maxImageWidth = bounds.width * 0.8
+        let maxImageHeight = bounds.height * 0.8
 
         let widthRatio = min(1, maxImageWidth / imageWidthPoints)
         let heightRatio = min(1, maxImageHeight / imageHeightPoints)
