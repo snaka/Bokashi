@@ -5,7 +5,7 @@ A privacy-aware screenshot tool for macOS.
 > **Bokashi** (ぼかし) is the Japanese word for *blur* or *obscure*.
 > Not to be confused with the composting method of the same name 🌱.
 
-**Status:** v0.1.0 — first public release. Capture, annotate, and copy or save the result.
+**Status:** v0.2.0 — adds mosaic privacy masking on top of the v0.1.0 capture + annotation flow.
 
 ## Why another screenshot tool?
 
@@ -25,9 +25,9 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Editor with clipboard-first save flow | ✅ |
 | Annotation tools (arrow / box / ellipse / line) | ✅ |
 | Color & stroke-width pickers, undo / redo | ✅ |
-| Manual mosaic masking | Planned (M4) |
+| Manual mosaic masking | ✅ |
 | Automatic sensitive-info detection (Japanese-aware) | Planned (M5) |
-| Auto-update via Sparkle | Planned (M4) |
+| Auto-update via Sparkle, signed releases | Planned (later) |
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan and
 [CHANGELOG.md](CHANGELOG.md) for release history.

@@ -5,6 +5,25 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-05-04
+
+### Added
+
+- **Mosaic annotation tool** — drag a rectangle with the new Mosaic
+  tool to pixelate a region. The mosaic is treated like any other
+  annotation: it participates in undo/redo and bakes into the
+  rendered image at native resolution. Block size is fixed at 16
+  image-pixels for this release.
+
+### Changed
+
+- The editor window now opens at the captured image's native point
+  size, clamped to 80 % of the visible frame in either axis. Region
+  and window captures stay 1:1; full-screen captures get a more
+  generous initial window than the previous 2/3 cap.
+
+[0.2.0]: https://github.com/snaka/Bokashi/releases/tag/v0.2.0
+
 ## [0.1.0] - 2026-05-04
 
 First public release.
