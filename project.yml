@@ -15,6 +15,9 @@ settings:
 packages:
   BokashiCore:
     path: Packages/BokashiCore
+  KeyboardShortcuts:
+    url: https://github.com/sindresorhus/KeyboardShortcuts
+    from: 2.0.0
 
 targets:
   Bokashi:
@@ -24,6 +27,7 @@ targets:
       - path: Bokashi
     dependencies:
       - package: BokashiCore
+      - package: KeyboardShortcuts
     info:
       path: Bokashi/Info.plist
       properties:
