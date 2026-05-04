@@ -31,17 +31,14 @@ enum Tool: CaseIterable, Hashable {
         }
     }
 
-    private var defaultStyle: AnnotationStyle {
+    var isFilled: Bool {
         switch self {
-        case .filledBox, .filledEllipse:
-            return .defaultFilled
-        default:
-            return .defaultOutline
+        case .filledBox, .filledEllipse: return true
+        default: return false
         }
     }
 
-    func makeAnnotation(from start: CGPoint, to end: CGPoint) -> Annotation {
-        let style = defaultStyle
+    func makeAnnotation(from start: CGPoint, to end: CGPoint, style: AnnotationStyle) -> Annotation {
         switch self {
         case .arrow:
             return Annotation(kind: .arrow(start: start, end: end), style: style)

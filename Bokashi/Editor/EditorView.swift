@@ -1,3 +1,4 @@
+import BokashiCore
 import SwiftUI
 
 struct EditorView: View {
@@ -7,6 +8,8 @@ struct EditorView: View {
     let onSave: () -> Void
     let onDiscard: () -> Void
 
+    @Environment(\.undoManager) private var undoManager
+
     var body: some View {
         VStack(spacing: 0) {
             toolbar
@@ -14,6 +17,11 @@ struct EditorView: View {
             AnnotationCanvas(image: image, state: state)
         }
         .background(Color(nsColor: .windowBackgroundColor))
+        .background(undoShortcuts)
+        .onAppear { state.undoManager = undoManager }
+        .onChange(of: undoManager) { _, newValue in
+            state.undoManager = newValue
+        }
     }
 
     private var toolbar: some View {
@@ -26,9 +34,19 @@ struct EditorView: View {
             Divider().frame(height: 22)
 
             HStack(spacing: 4) {
-                ForEach(Tool.allCases, id: \.self) { tool in
-                    toolButton(tool)
-                }
+                ForEach(Tool.allCases, id: \.self) { toolButton($0) }
+            }
+
+            Divider().frame(height: 22)
+
+            HStack(spacing: 4) {
+                ForEach(RGBA.presets, id: \.self) { colorChip($0) }
+            }
+
+            Divider().frame(height: 22)
+
+            HStack(spacing: 4) {
+                ForEach(AnnotationStyle.WidthPreset.allCases, id: \.self) { widthButton($0) }
             }
 
             Spacer()
@@ -61,5 +79,59 @@ struct EditorView: View {
         }
         .buttonStyle(.borderless)
         .help(tool.label)
+    }
+
+    private func colorChip(_ rgba: RGBA) -> some View {
+        let isSelected = state.color == rgba
+        return Button {
+            state.color = rgba
+        } label: {
+            Circle()
+                .fill(Color(rgba))
+                .frame(width: 18, height: 18)
+                .overlay(
+                    Circle()
+                        .stroke(Color.secondary.opacity(0.4), lineWidth: 0.5)
+                )
+                .padding(3)
+                .background(
+                    isSelected ? Color.accentColor.opacity(0.25) : Color.clear,
+                    in: RoundedRectangle(cornerRadius: 5)
+                )
+        }
+        .buttonStyle(.borderless)
+        .help("Color")
+    }
+
+    private func widthButton(_ preset: AnnotationStyle.WidthPreset) -> some View {
+        let isSelected = abs(state.lineWidth - preset.lineWidth) < 0.01
+        return Button {
+            state.lineWidth = preset.lineWidth
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 5)
+                    .fill(isSelected ? Color.accentColor.opacity(0.25) : Color.clear)
+                    .frame(width: 32, height: 24)
+                Capsule()
+                    .fill(Color.primary)
+                    .frame(width: 18, height: max(2, preset.lineWidth))
+            }
+        }
+        .buttonStyle(.borderless)
+        .help(preset.label)
+    }
+
+    private var undoShortcuts: some View {
+        HStack {
+            Button("Undo") { undoManager?.undo() }
+                .keyboardShortcut("z", modifiers: .command)
+                .disabled(!(undoManager?.canUndo ?? false))
+            Button("Redo") { undoManager?.redo() }
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+                .disabled(!(undoManager?.canRedo ?? false))
+        }
+        .opacity(0)
+        .accessibilityHidden(true)
+        .frame(width: 0, height: 0)
     }
 }

@@ -29,8 +29,8 @@ a tagged GitHub release where useful.
 - [x] Editor window opens after each capture
 - [x] Clipboard-first save flow (Done/Save…/Discard); no auto-save to disk
 - [x] Tools: arrow, box (filled / outlined), ellipse (filled / outlined), line
-- [ ] Color and stroke-width controls
-- [ ] Undo / redo via `UndoManager`
+- [x] Color and stroke-width controls
+- [x] Undo / redo via `UndoManager`
 - [ ] **First public release: v0.1.0 on GitHub Releases**
 
 ## M4 — Privacy masking (manual) → v0.2.0
