@@ -1,0 +1,77 @@
+import BokashiCore
+import CoreGraphics
+import SwiftUI
+
+struct AnnotationCanvas: View {
+    let image: CGImage
+    let state: EditorState
+
+    var body: some View {
+        GeometryReader { geometry in
+            Canvas { context, size in
+                let displayRect = displayedImageRect(in: size)
+                context.draw(
+                    Image(image, scale: 1, label: Text("Captured screenshot")),
+                    in: displayRect
+                )
+                let scale = displayRect.width / CGFloat(image.width)
+                let transform: (CGPoint) -> CGPoint = { point in
+                    CGPoint(
+                        x: displayRect.origin.x + point.x * scale,
+                        y: displayRect.origin.y + point.y * scale
+                    )
+                }
+                for annotation in state.annotations {
+                    var ctx = context
+                    AnnotationDrawing.draw(annotation, in: &ctx, transform: transform, displayScale: scale)
+                }
+                if let draft = state.draft {
+                    var ctx = context
+                    AnnotationDrawing.draw(draft, in: &ctx, transform: transform, displayScale: scale)
+                }
+            }
+            .gesture(
+                DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                    .onChanged { value in
+                        let canvasSize = geometry.size
+                        let imageStart = canvasToImage(value.startLocation, canvasSize: canvasSize)
+                        let imageEnd = canvasToImage(value.location, canvasSize: canvasSize)
+                        state.updateDraft(start: imageStart, current: imageEnd)
+                    }
+                    .onEnded { _ in
+                        state.commitDraft()
+                    }
+            )
+        }
+        .background(Color.black.opacity(0.7))
+    }
+
+    private func displayedImageRect(in size: CGSize) -> CGRect {
+        let imageW = CGFloat(image.width)
+        let imageH = CGFloat(image.height)
+        guard imageW > 0, imageH > 0, size.width > 0, size.height > 0 else {
+            return CGRect(origin: .zero, size: size)
+        }
+        let imageAspect = imageW / imageH
+        let canvasAspect = size.width / size.height
+        if imageAspect > canvasAspect {
+            let w = size.width
+            let h = w / imageAspect
+            return CGRect(x: 0, y: (size.height - h) / 2, width: w, height: h)
+        } else {
+            let h = size.height
+            let w = h * imageAspect
+            return CGRect(x: (size.width - w) / 2, y: 0, width: w, height: h)
+        }
+    }
+
+    private func canvasToImage(_ point: CGPoint, canvasSize: CGSize) -> CGPoint {
+        let displayRect = displayedImageRect(in: canvasSize)
+        guard displayRect.width > 0, image.width > 0 else { return .zero }
+        let scale = displayRect.width / CGFloat(image.width)
+        return CGPoint(
+            x: (point.x - displayRect.origin.x) / scale,
+            y: (point.y - displayRect.origin.y) / scale
+        )
+    }
+}

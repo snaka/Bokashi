@@ -11,6 +11,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     }
 
     private let image: CGImage
+    private let state = EditorState()
     private var outcome: Outcome = .copyOnClose
     var onClosed: (() -> Void)?
 
@@ -23,6 +24,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         let host = NSHostingController(
             rootView: EditorView(
                 image: image,
+                state: state,
                 onDone: { [weak self] in self?.done() },
                 onSave: { [weak self] in self?.save() },
                 onDiscard: { [weak self] in self?.discard() }
@@ -73,6 +75,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         return "Bokashi · \(formatter.string(from: Date()))"
     }
 
+    private var renderedImage: CGImage {
+        AnnotationFlattener.flatten(image: image, annotations: state.annotations)
+    }
+
     private func done() {
         outcome = .copyOnClose
         close()
@@ -95,7 +101,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
             guard let self else { return }
             guard response == .OK, let url = panel.url else { return }
             do {
-                try PNGWriter.write(self.image, to: url)
+                try PNGWriter.write(self.renderedImage, to: url)
                 self.outcome = .saved
                 Task { @MainActor in
                     await NotificationManager.shared.notifyScreenshotSaved(at: url)
@@ -110,7 +116,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         if outcome == .copyOnClose {
-            Clipboard.copy(image)
+            Clipboard.copy(renderedImage)
         }
         onClosed?()
     }
