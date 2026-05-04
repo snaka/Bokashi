@@ -5,17 +5,29 @@
 //
 //   swift Tools/generate_icon.swift
 //
-// The app icon is a rounded-square in Bokashi red with an SF Symbol
-// mosaic glyph in white. The menubar icon is the same glyph rendered
-// in solid black on a transparent background, marked as a template
-// so AppKit handles light/dark tinting automatically.
+// The app icon is a stylised bust-up portrait — skin / black-hair /
+// navy-suit / white-shirt / red-tie — with the left half pixelated,
+// on a cool-slate rounded square. The menubar icon is a simplified
+// solid-black silhouette of the same figure on a transparent
+// background, marked as a template so AppKit can tint it for
+// light/dark mode.
 
 import AppKit
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import Foundation
 
 let assetsDir = "Bokashi/Assets.xcassets"
-let backgroundColor = NSColor(red: 0.95, green: 0.22, blue: 0.18, alpha: 1.0)
-let symbolName = "square.grid.3x3.fill"
+
+// AppIcon palette
+let backgroundColor = NSColor(red: 0.45, green: 0.50, blue: 0.55, alpha: 1.0)
+let skinColor       = NSColor(red: 0.96, green: 0.83, blue: 0.69, alpha: 1.0)
+let hairColor       = NSColor(red: 0.13, green: 0.10, blue: 0.10, alpha: 1.0)
+let suitColor       = NSColor(red: 0.18, green: 0.22, blue: 0.32, alpha: 1.0)
+let shirtColor      = NSColor.white
+let tieColor        = NSColor(red: 0.78, green: 0.20, blue: 0.22, alpha: 1.0)
+
+// MARK: - Bitmap helpers
 
 func makeBitmap(pixels: Int) -> NSBitmapImageRep {
     NSBitmapImageRep(
@@ -40,58 +52,168 @@ func draw(into bitmap: NSBitmapImageRep, body: () -> Void) {
     NSGraphicsContext.restoreGraphicsState()
 }
 
+func roundedSquare(_ canvas: CGFloat, color: NSColor) {
+    let path = NSBezierPath(
+        roundedRect: NSRect(x: 0, y: 0, width: canvas, height: canvas),
+        xRadius: canvas * 0.224,
+        yRadius: canvas * 0.224
+    )
+    color.setFill()
+    path.fill()
+}
+
+func pixellate(_ image: CGImage, scale: Float) -> CGImage? {
+    let ci = CIImage(cgImage: image)
+    let filter = CIFilter.pixellate()
+    filter.inputImage = ci
+    filter.scale = scale
+    filter.center = CGPoint(x: ci.extent.midX, y: ci.extent.midY)
+    guard let output = filter.outputImage else { return nil }
+    let context = CIContext()
+    return context.createCGImage(output, from: ci.extent)
+}
+
+// MARK: - App icon: detailed portrait
+
+func renderColorPerson(in canvas: CGFloat) {
+    let centerX = canvas / 2
+    let suitTopY: CGFloat = canvas * 0.42
+    let shoulderHalfWidth: CGFloat = canvas * 0.16
+    let baseHalfWidth: CGFloat = canvas * 0.42
+
+    // Suit / torso (trapezoid)
+    let suit = NSBezierPath()
+    suit.move(to: NSPoint(x: centerX - baseHalfWidth, y: 0))
+    suit.line(to: NSPoint(x: centerX + baseHalfWidth, y: 0))
+    suit.line(to: NSPoint(x: centerX + shoulderHalfWidth, y: suitTopY))
+    suit.line(to: NSPoint(x: centerX - shoulderHalfWidth, y: suitTopY))
+    suit.close()
+    suitColor.setFill()
+    suit.fill()
+
+    // Shirt V
+    let shirt = NSBezierPath()
+    shirt.move(to: NSPoint(x: centerX - canvas * 0.07, y: suitTopY))
+    shirt.line(to: NSPoint(x: centerX, y: suitTopY - canvas * 0.12))
+    shirt.line(to: NSPoint(x: centerX + canvas * 0.07, y: suitTopY))
+    shirt.close()
+    shirtColor.setFill()
+    shirt.fill()
+
+    // Tie
+    let tie = NSBezierPath()
+    tie.move(to: NSPoint(x: centerX - canvas * 0.025, y: suitTopY - canvas * 0.10))
+    tie.line(to: NSPoint(x: centerX + canvas * 0.025, y: suitTopY - canvas * 0.10))
+    tie.line(to: NSPoint(x: centerX + canvas * 0.040, y: suitTopY - canvas * 0.22))
+    tie.line(to: NSPoint(x: centerX,                  y: suitTopY - canvas * 0.27))
+    tie.line(to: NSPoint(x: centerX - canvas * 0.040, y: suitTopY - canvas * 0.22))
+    tie.close()
+    tieColor.setFill()
+    tie.fill()
+
+    // Head
+    let headWidth: CGFloat = canvas * 0.30
+    let headHeight: CGFloat = canvas * 0.34
+    let headBottomY = suitTopY - canvas * 0.02
+    let headRect = NSRect(
+        x: centerX - headWidth / 2,
+        y: headBottomY,
+        width: headWidth,
+        height: headHeight
+    )
+    skinColor.setFill()
+    NSBezierPath(ovalIn: headRect).fill()
+
+    // Hair cap
+    let hairWidth = headWidth * 1.06
+    let hairHeight = headHeight * 0.62
+    let hairY = headBottomY + headHeight * 0.50
+    let hairRect = NSRect(
+        x: centerX - hairWidth / 2,
+        y: hairY,
+        width: hairWidth,
+        height: hairHeight
+    )
+    hairColor.setFill()
+    NSBezierPath(ovalIn: hairRect).fill()
+}
+
+func renderForegroundCGImage(_ canvasSize: CGFloat, drawing: () -> Void) -> CGImage {
+    let bitmap = makeBitmap(pixels: Int(canvasSize))
+    draw(into: bitmap) { drawing() }
+    return bitmap.cgImage!
+}
+
 func renderAppIcon(pixelSize: Int) -> Data? {
-    let size = CGFloat(pixelSize)
+    let canvas = CGFloat(pixelSize)
+    let foreground = renderForegroundCGImage(canvas) {
+        renderColorPerson(in: canvas)
+    }
+    guard let pixelated = pixellate(foreground, scale: max(2, Float(canvas) / 14)) else {
+        return nil
+    }
+
     let bitmap = makeBitmap(pixels: pixelSize)
     draw(into: bitmap) {
-        let cornerRadius = size * 0.224
-        let path = NSBezierPath(
-            roundedRect: NSRect(x: 0, y: 0, width: size, height: size),
-            xRadius: cornerRadius,
-            yRadius: cornerRadius
-        )
-        backgroundColor.setFill()
-        path.fill()
+        roundedSquare(canvas, color: backgroundColor)
 
-        let symbolPointSize = size * 0.55
-        let config = NSImage.SymbolConfiguration(pointSize: symbolPointSize, weight: .semibold)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [.white]))
-        guard let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
-            .withSymbolConfiguration(config) else { return }
+        let fullRect = NSRect(x: 0, y: 0, width: canvas, height: canvas)
+        let half = canvas / 2
 
-        let symbolSize = symbol.size
-        let symbolRect = NSRect(
-            x: (size - symbolSize.width) / 2,
-            y: (size - symbolSize.height) / 2,
-            width: symbolSize.width,
-            height: symbolSize.height
-        )
-        symbol.draw(in: symbolRect)
+        // Right half: sharp portrait
+        NSGraphicsContext.current?.saveGraphicsState()
+        NSBezierPath(rect: NSRect(x: half, y: 0, width: half, height: canvas)).addClip()
+        NSImage(cgImage: foreground, size: fullRect.size).draw(in: fullRect)
+        NSGraphicsContext.current?.restoreGraphicsState()
+
+        // Left half: pixelated portrait
+        NSGraphicsContext.current?.saveGraphicsState()
+        NSBezierPath(rect: NSRect(x: 0, y: 0, width: half, height: canvas)).addClip()
+        NSImage(cgImage: pixelated, size: fullRect.size).draw(in: fullRect)
+        NSGraphicsContext.current?.restoreGraphicsState()
     }
     return bitmap.representation(using: .png, properties: [:])
+}
+
+// MARK: - Menubar icon: simplified single-color silhouette (template)
+
+func renderMenuBarSilhouette(in canvas: CGFloat) {
+    let centerX = canvas / 2
+    let suitTopY: CGFloat = canvas * 0.45
+    let shoulderHalfWidth: CGFloat = canvas * 0.18
+    let baseHalfWidth: CGFloat = canvas * 0.46
+
+    NSColor.black.setFill()
+
+    // Suit / torso
+    let suit = NSBezierPath()
+    suit.move(to: NSPoint(x: centerX - baseHalfWidth, y: 0))
+    suit.line(to: NSPoint(x: centerX + baseHalfWidth, y: 0))
+    suit.line(to: NSPoint(x: centerX + shoulderHalfWidth, y: suitTopY))
+    suit.line(to: NSPoint(x: centerX - shoulderHalfWidth, y: suitTopY))
+    suit.close()
+    suit.fill()
+
+    // Combined head + hair as one full oval (template = single color)
+    let headWidth: CGFloat = canvas * 0.40
+    let headHeight: CGFloat = canvas * 0.46
+    let headBottomY = suitTopY - canvas * 0.04
+    let headRect = NSRect(
+        x: centerX - headWidth / 2,
+        y: headBottomY,
+        width: headWidth,
+        height: headHeight
+    )
+    NSBezierPath(ovalIn: headRect).fill()
 }
 
 func renderMenuBarIcon(pixelSize: Int) -> Data? {
-    let size = CGFloat(pixelSize)
     let bitmap = makeBitmap(pixels: pixelSize)
-    draw(into: bitmap) {
-        let symbolPointSize = size * 0.95
-        let config = NSImage.SymbolConfiguration(pointSize: symbolPointSize, weight: .regular)
-            .applying(NSImage.SymbolConfiguration(paletteColors: [.black]))
-        guard let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)?
-            .withSymbolConfiguration(config) else { return }
-
-        let symbolSize = symbol.size
-        let symbolRect = NSRect(
-            x: (size - symbolSize.width) / 2,
-            y: (size - symbolSize.height) / 2,
-            width: symbolSize.width,
-            height: symbolSize.height
-        )
-        symbol.draw(in: symbolRect)
-    }
+    draw(into: bitmap) { renderMenuBarSilhouette(in: CGFloat(pixelSize)) }
     return bitmap.representation(using: .png, properties: [:])
 }
+
+// MARK: - File helpers
 
 func write(_ data: Data, to path: String) throws {
     try data.write(to: URL(fileURLWithPath: path))
@@ -110,7 +232,7 @@ func makeDirectory(_ path: String) throws {
     )
 }
 
-// MARK: - Asset Catalog root
+// MARK: - Asset catalog plumbing
 
 try makeDirectory(assetsDir)
 try writeText(
@@ -122,8 +244,6 @@ try writeText(
     """,
     to: "\(assetsDir)/Contents.json"
 )
-
-// MARK: - AppIcon.appiconset
 
 let appIconDir = "\(assetsDir)/AppIcon.appiconset"
 try makeDirectory(appIconDir)
@@ -166,8 +286,6 @@ try writeText(
     """,
     to: "\(appIconDir)/Contents.json"
 )
-
-// MARK: - MenuBarIcon.imageset
 
 let menuBarDir = "\(assetsDir)/MenuBarIcon.imageset"
 try makeDirectory(menuBarDir)
