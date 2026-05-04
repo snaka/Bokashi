@@ -37,6 +37,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         window.contentViewController = host
         window.setContentSize(contentSize)
         window.center()
+
+        Task { @MainActor [state, image] in
+            await state.runOCR(on: image)
+        }
     }
 
     @available(*, unavailable)
