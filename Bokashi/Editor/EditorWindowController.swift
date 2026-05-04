@@ -35,17 +35,19 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
 
     private static func makeWindow(forImage image: CGImage) -> NSWindow {
         let scale = NSScreen.main?.backingScaleFactor ?? 2
-        let pointWidth = CGFloat(image.width) / scale
-        let pointHeight = CGFloat(image.height) / scale
+        let imageWidthPoints = CGFloat(image.width) / scale
+        let imageHeightPoints = CGFloat(image.height) / scale
 
         let bounds = NSScreen.main?.visibleFrame.size ?? CGSize(width: 1200, height: 800)
         let toolbarHeight: CGFloat = 56
-        let maxContentWidth = bounds.width * 0.85
-        let maxImageHeight = bounds.height * 0.85 - toolbarHeight
+        let maxContentWidth = bounds.width * 2 / 3
+        let maxImageHeight = bounds.height * 2 / 3 - toolbarHeight
 
-        let scaleFactor = min(1, min(maxContentWidth / pointWidth, maxImageHeight / pointHeight))
-        let contentWidth = max(420, pointWidth * scaleFactor)
-        let contentHeight = pointHeight * scaleFactor + toolbarHeight
+        let widthRatio = min(1, maxContentWidth / imageWidthPoints)
+        let heightRatio = min(1, maxImageHeight / imageHeightPoints)
+        let scaleFactor = min(widthRatio, heightRatio)
+        let contentWidth = max(420, imageWidthPoints * scaleFactor)
+        let contentHeight = imageHeightPoints * scaleFactor + toolbarHeight
 
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: contentWidth, height: contentHeight),
