@@ -56,6 +56,28 @@ swift test --package-path Packages/BokashiCore
   `KeyboardShortcuts` / Carbon `RegisterEventHotKey`.
 - The app is configured as `LSUIElement` (menubar-only, no Dock icon).
 
+## Code signing for local development
+
+`project.yml` currently pins manual signing to the maintainer's free
+Personal Team (`DEVELOPMENT_TEAM` + `CODE_SIGN_IDENTITY` SHA hash).
+The hash is the maintainer's *Apple Development* certificate fingerprint;
+it is not secret, but it only matches the maintainer's keychain.
+
+A stable signing identity is what keeps macOS's TCC grants (Screen
+Recording, Notifications, etc.) attached to the binary across rebuilds.
+Without it, every Xcode build appears as a new app to TCC and silently
+loses permission, forcing a `tccutil reset ScreenCapture com.snaka.Bokashi`
+between iterations.
+
+If you are not the maintainer and want to build locally, either:
+
+1. Replace `DEVELOPMENT_TEAM` and `CODE_SIGN_IDENTITY` in `project.yml`
+   with your own Apple Development certificate hash (find with
+   `security find-identity -v -p codesigning`), or
+2. Strip both keys plus `CODE_SIGN_STYLE: Manual` to fall back to
+   ad-hoc signing — the app still builds, but TCC permissions will
+   reset on each rebuild.
+
 ## What goes where
 
 | Concern | Location |
