@@ -14,6 +14,8 @@ struct BokashiApp: App {
 
     @ViewBuilder
     private var menuContent: some View {
+        @Bindable var prefs = Preferences.shared
+
         Text("Bokashi v\(BokashiCore.version)")
         Divider()
         Button("Capture Full Screen") {
@@ -46,6 +48,8 @@ struct BokashiApp: App {
                 }
             }
         }
+        Divider()
+        Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
         Divider()
         Button("Quit Bokashi") {
             NSApplication.shared.terminate(nil)

@@ -13,12 +13,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     private let image: CGImage
     private let mosaicImage: CGImage?
     private let state = EditorState()
+    private let autoMaskOnCapture: Bool
     private var outcome: Outcome = .copyOnClose
     var onClosed: (() -> Void)?
 
-    init(image: CGImage) {
+    init(image: CGImage, autoMaskOnCapture: Bool = false) {
         self.image = image
         self.mosaicImage = MosaicRenderer.apply(to: image)
+        self.autoMaskOnCapture = autoMaskOnCapture
 
         let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
@@ -38,8 +40,11 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         window.setContentSize(contentSize)
         window.center()
 
-        Task { @MainActor [state, image] in
+        Task { @MainActor [state, image, autoMaskOnCapture] in
             await state.runOCR(on: image)
+            if autoMaskOnCapture {
+                await state.detectSensitiveInfo(in: image)
+            }
         }
     }
 
