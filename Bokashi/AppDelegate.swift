@@ -4,10 +4,14 @@ import KeyboardShortcuts
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let captureCoordinator = CaptureCoordinator()
+    let windowsModel = WindowsModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NotificationManager.shared.setUp()
         registerHotkeys()
+        Task { @MainActor in
+            await windowsModel.refresh()
+        }
     }
 
     private func registerHotkeys() {
