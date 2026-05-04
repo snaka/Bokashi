@@ -6,15 +6,20 @@ import ScreenCaptureKit
 final class CaptureCoordinator {
     private let captureService = CaptureService()
     private let regionSelector = RegionSelector()
+    private let editorPresenter: EditorPresenter
+
+    init(editorPresenter: EditorPresenter) {
+        self.editorPresenter = editorPresenter
+    }
 
     func captureFullScreen() async {
         guard ensurePermission() else { return }
-        await save { try await captureService.captureMainDisplay() }
+        await present { try await self.captureService.captureMainDisplay() }
     }
 
     func captureWindow(byID windowID: CGWindowID) async {
         guard ensurePermission() else { return }
-        await save {
+        await present {
             let content = try await SCShareableContent.current
             guard let window = content.windows.first(where: { $0.windowID == windowID }) else {
                 throw CaptureCoordinatorError.windowNoLongerAvailable
@@ -27,18 +32,13 @@ final class CaptureCoordinator {
         guard ensurePermission() else { return }
         guard let screenRect = await regionSelector.selectRegion() else { return }
         try? await Task.sleep(for: .milliseconds(100))
-        await save { try await self.captureService.captureRegion(in: screenRect) }
+        await present { try await self.captureService.captureRegion(in: screenRect) }
     }
 
-    private func save(_ produce: () async throws -> CGImage) async {
+    private func present(_ produce: () async throws -> CGImage) async {
         do {
             let image = try await produce()
-            let url = SaveDestination.desktopURL(for: CaptureFilename.make())
-            try PNGWriter.write(image, to: url)
-            let posted = await NotificationManager.shared.notifyScreenshotSaved(at: url)
-            if !posted {
-                NSSound.beep()
-            }
+            editorPresenter.present(image: image)
         } catch {
             presentError(error)
         }

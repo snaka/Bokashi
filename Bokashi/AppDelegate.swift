@@ -3,7 +3,8 @@ import KeyboardShortcuts
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    let captureCoordinator = CaptureCoordinator()
+    let editorPresenter = EditorPresenter()
+    lazy var captureCoordinator = CaptureCoordinator(editorPresenter: editorPresenter)
     let windowsModel = WindowsModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {

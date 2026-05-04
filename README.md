@@ -5,7 +5,7 @@ A privacy-aware screenshot tool for macOS.
 > **Bokashi** (ぼかし) is the Japanese word for *blur* or *obscure*.
 > Not to be confused with the composting method of the same name 🌱.
 
-**Status:** Early development. Not yet usable.
+**Status:** Early development.
 
 ## Why another screenshot tool?
 
@@ -13,16 +13,17 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 
 - **Native macOS** — Swift, SwiftUI / AppKit, ScreenCaptureKit. No Electron.
 - **Annotation-first** — arrows, boxes, ellipses, lines, undo/redo. Designed to feel right.
-- **Privacy-aware** — manual mosaic masking now; automatic detection of sensitive information (with Japanese-language support) on the roadmap.
+- **Privacy-aware** — captures stay in memory; closing the editor copies them to your clipboard. Bokashi never writes a screenshot to disk unless you explicitly ask. Manual mosaic masking now, and automatic detection of sensitive information (with Japanese-language support) on the roadmap.
 - **Open source** — MIT licensed. Hackable, contribution-friendly.
 
-## Planned features
+## Features
 
 | Feature | Status |
 |---|---|
-| Menubar app + global hotkeys | Planned (M1) |
-| Full-screen / window / region capture | Planned (M1–M2) |
-| Annotation editor (arrow / box / ellipse / line) | Planned (M3) |
+| Menubar app + global hotkeys | ✅ |
+| Full-screen / window / region capture | ✅ |
+| Editor with clipboard-first save flow | ✅ |
+| Annotation tools (arrow / box / ellipse / line) | In progress (M3) |
 | Manual mosaic masking | Planned (M4) |
 | Automatic sensitive-info detection (Japanese-aware) | Planned (M5) |
 | Auto-update via Sparkle | Planned (M4) |

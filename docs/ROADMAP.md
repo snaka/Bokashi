@@ -3,7 +3,7 @@
 Bokashi is built in small, releasable increments. Each milestone ends with
 a tagged GitHub release where useful.
 
-## M0 — Repository scaffolding (current)
+## M0 — Repository scaffolding ✅
 
 - [x] License (MIT), README, CLAUDE.md, .gitignore
 - [x] XcodeGen `project.yml`
@@ -11,27 +11,26 @@ a tagged GitHub release where useful.
 - [x] `BokashiCore` local Swift package with one passing test
 - [x] CI: GitHub Actions running `xcodegen` + `xcodebuild` + `swift test`
 
-## M1 — Minimum viable capture
+## M1 — Minimum viable capture ✅
 
-- [ ] Menubar status item (`NSStatusItem`)
-- [ ] Full-screen capture via `ScreenCaptureKit`
-- [ ] Save PNG to `~/Desktop` (configurable later)
-- [ ] Screen Recording permission request flow
-- [ ] One global hotkey (configurable in code; settings UI comes later)
+- [x] Menubar status item (via SwiftUI `MenuBarExtra`)
+- [x] Full-screen capture via `ScreenCaptureKit`
+- [x] Screen Recording permission request flow
+- [x] One global hotkey (`⌃⌥⇧4` for full screen)
 
-## M2 — Capture modes
+## M2 — Capture modes ✅
 
-- [ ] Window selection capture (`SCShareableContent.windows`)
-- [ ] Region selection via transparent overlay window
-- [ ] Per-mode hotkeys
+- [x] Window selection capture (`SCShareableContent.windows`)
+- [x] Region selection via transparent overlay window
+- [x] Per-mode hotkeys (`⌃⌥⇧6` for region; window picker is menu-driven)
 
-## M3 — Annotation editor → v0.1.0
+## M3 — Annotation editor → v0.1.0 (in progress)
 
-- [ ] Editor window opens after each capture
+- [x] Editor window opens after each capture
+- [x] Clipboard-first save flow (Done/Save…/Discard); no auto-save to disk
 - [ ] Tools: arrow, box (filled / outlined), ellipse (filled / outlined), line
 - [ ] Color and stroke-width controls
 - [ ] Undo / redo via `UndoManager`
-- [ ] Copy to clipboard, save PNG
 - [ ] **First public release: v0.1.0 on GitHub Releases**
 
 ## M4 — Privacy masking (manual) → v0.2.0
