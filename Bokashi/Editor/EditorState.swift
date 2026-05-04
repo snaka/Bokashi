@@ -11,9 +11,31 @@ final class EditorState {
     var lineWidth: CGFloat = AnnotationStyle.WidthPreset.medium.lineWidth
     var annotations: [Annotation] = []
     var draft: Annotation?
+    var isDetecting: Bool = false
 
     @ObservationIgnored
     var undoManager: UndoManager?
+
+    func detectSensitiveInfo(in image: CGImage) async {
+        guard !isDetecting else { return }
+        isDetecting = true
+        defer { isDetecting = false }
+
+        let detected: [Annotation]
+        do {
+            detected = try await AutoMasker.detect(in: image)
+        } catch {
+            return
+        }
+        guard !detected.isEmpty else { return }
+
+        undoManager?.beginUndoGrouping()
+        for annotation in detected {
+            addAnnotation(annotation)
+        }
+        undoManager?.setActionName("Auto-Mask Sensitive Info")
+        undoManager?.endUndoGrouping()
+    }
 
     var currentStyle: AnnotationStyle {
         AnnotationStyle(color: color, lineWidth: lineWidth, filled: tool.isFilled)
