@@ -12,21 +12,43 @@ final class EditorState {
     var annotations: [Annotation] = []
     var draft: Annotation?
     var isDetecting: Bool = false
+    var isOCRReady: Bool = false
 
     @ObservationIgnored
     var undoManager: UndoManager?
+
+    @ObservationIgnored
+    private var ocrObservations: [OCRRunner.TextObservation] = []
+
+    @ObservationIgnored
+    private var ocrTask: Task<Void, Never>?
+
+    func runOCR(on image: CGImage) async {
+        if isOCRReady { return }
+        if let existing = ocrTask {
+            await existing.value
+            return
+        }
+        let task = Task { @MainActor in
+            do {
+                self.ocrObservations = try await OCRRunner.recognize(image)
+            } catch {
+                self.ocrObservations = []
+            }
+            self.isOCRReady = true
+        }
+        ocrTask = task
+        await task.value
+    }
 
     func detectSensitiveInfo(in image: CGImage) async {
         guard !isDetecting else { return }
         isDetecting = true
         defer { isDetecting = false }
 
-        let detected: [Annotation]
-        do {
-            detected = try await AutoMasker.detect(in: image)
-        } catch {
-            return
-        }
+        await runOCR(on: image)
+
+        let detected = AutoMasker.detect(in: ocrObservations)
         guard !detected.isEmpty else { return }
 
         undoManager?.beginUndoGrouping()
@@ -47,8 +69,32 @@ final class EditorState {
 
     func commitDraft() {
         defer { draft = nil }
-        guard let candidate = draft, isMeaningful(candidate) else { return }
+        guard let candidate = draft else { return }
+
+        // Mosaic tool: a click (zero-distance drag) on detected text masks
+        // that whole text region. Otherwise fall back to the meaningful-drag
+        // rule used by every tool.
+        if tool == .mosaic, !isMeaningful(candidate),
+           case .mosaic(let rect) = candidate.kind,
+           let textRect = textRect(at: CGPoint(x: rect.midX, y: rect.midY))
+        {
+            let textAnnotation = Annotation(
+                kind: .mosaic(rect: textRect.insetBy(dx: -2, dy: -2)),
+                style: candidate.style
+            )
+            addAnnotation(textAnnotation)
+            return
+        }
+
+        guard isMeaningful(candidate) else { return }
         addAnnotation(candidate)
+    }
+
+    private func textRect(at imagePoint: CGPoint) -> CGRect? {
+        for obs in ocrObservations where obs.fullImageRect.contains(imagePoint) {
+            return obs.fullImageRect
+        }
+        return nil
     }
 
     private func addAnnotation(_ annotation: Annotation) {

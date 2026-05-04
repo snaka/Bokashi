@@ -7,18 +7,56 @@ enum OCRRunner {
         let text: String
         let recognizedText: VNRecognizedText
         let imageSize: CGSize
+        let fullImageRect: CGRect
 
-        func imageRect(forSubrange nsRange: NSRange) -> CGRect? {
-            guard let stringRange = Range(nsRange, in: text) else { return nil }
-            guard let observation = try? recognizedText.boundingBox(for: stringRange) else {
-                return nil
-            }
-            return Self.imagePixelRect(fromNormalized: observation.boundingBox, imageSize: imageSize)
+        init(text: String, recognizedText: VNRecognizedText, imageSize: CGSize) {
+            self.text = text
+            self.recognizedText = recognizedText
+            self.imageSize = imageSize
+            let nsRange = NSRange(location: 0, length: (text as NSString).length)
+            self.fullImageRect = Self.imageRect(
+                in: recognizedText,
+                forNSRange: nsRange,
+                rangeBaseString: text,
+                imageSize: imageSize
+            ) ?? .zero
         }
 
-        private static func imagePixelRect(fromNormalized normalized: CGRect, imageSize: CGSize) -> CGRect {
-            // Vision returns normalized (0–1) coordinates with a bottom-left origin.
-            // Annotations are stored in image-pixel coordinates with a top-left origin.
+        func imageRect(forSubrange nsRange: NSRange) -> CGRect? {
+            Self.imageRect(
+                in: recognizedText,
+                forNSRange: nsRange,
+                rangeBaseString: text,
+                imageSize: imageSize
+            )
+        }
+
+        private static func imageRect(
+            in recognizedText: VNRecognizedText,
+            forNSRange nsRange: NSRange,
+            rangeBaseString text: String,
+            imageSize: CGSize
+        ) -> CGRect? {
+            guard let stringRange = Range(nsRange, in: text) else { return nil }
+            do {
+                guard let observation = try recognizedText.boundingBox(for: stringRange) else {
+                    return nil
+                }
+                return imagePixelRect(
+                    fromNormalized: observation.boundingBox,
+                    imageSize: imageSize
+                )
+            } catch {
+                return nil
+            }
+        }
+
+        private static func imagePixelRect(
+            fromNormalized normalized: CGRect,
+            imageSize: CGSize
+        ) -> CGRect {
+            // Vision uses normalized 0–1 coords with bottom-left origin.
+            // Annotations live in image-pixel coords with top-left origin.
             let x = normalized.origin.x * imageSize.width
             let yBottomLeft = normalized.origin.y * imageSize.height
             let width = normalized.width * imageSize.width
