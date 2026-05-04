@@ -24,14 +24,14 @@ a tagged GitHub release where useful.
 - [x] Region selection via transparent overlay window
 - [x] Per-mode hotkeys (`⌃⌥⇧6` for region; window picker is menu-driven)
 
-## M3 — Annotation editor → v0.1.0 (in progress)
+## M3 — Annotation editor → v0.1.0 ✅
 
 - [x] Editor window opens after each capture
 - [x] Clipboard-first save flow (Done/Save…/Discard); no auto-save to disk
 - [x] Tools: arrow, box (filled / outlined), ellipse (filled / outlined), line
 - [x] Color and stroke-width controls
 - [x] Undo / redo via `UndoManager`
-- [ ] **First public release: v0.1.0 on GitHub Releases**
+- [x] **First public release: v0.1.0 on GitHub Releases**
 
 ## M4 — Privacy masking (manual) → v0.2.0
 
