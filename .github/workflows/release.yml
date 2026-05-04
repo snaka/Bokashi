@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen
+      - name: Build Release (ad-hoc signed)
+        run: |
+          xcodebuild \
+            -project Bokashi.xcodeproj \
+            -scheme Bokashi \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY=- \
+            DEVELOPMENT_TEAM= \
+            PROVISIONING_PROFILE_SPECIFIER= \
+            build
+      - name: Zip app
+        id: zip
+        run: |
+          cd build/Build/Products/Release
+          ZIP_NAME="Bokashi-${GITHUB_REF_NAME}.zip"
+          ditto -c -k --keepParent Bokashi.app "$ZIP_NAME"
+          ls -lh "$ZIP_NAME"
+          echo "zip_path=build/Build/Products/Release/$ZIP_NAME" >> "$GITHUB_OUTPUT"
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/Build/Products/Release/Bokashi-*.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

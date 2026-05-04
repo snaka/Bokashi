@@ -5,7 +5,7 @@ A privacy-aware screenshot tool for macOS.
 > **Bokashi** (ぼかし) is the Japanese word for *blur* or *obscure*.
 > Not to be confused with the composting method of the same name 🌱.
 
-**Status:** Early development.
+**Status:** v0.1.0 — first public release. Capture, annotate, and copy or save the result.
 
 ## Why another screenshot tool?
 
@@ -23,12 +23,40 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Menubar app + global hotkeys | ✅ |
 | Full-screen / window / region capture | ✅ |
 | Editor with clipboard-first save flow | ✅ |
-| Annotation tools (arrow / box / ellipse / line) | In progress (M3) |
+| Annotation tools (arrow / box / ellipse / line) | ✅ |
+| Color & stroke-width pickers, undo / redo | ✅ |
 | Manual mosaic masking | Planned (M4) |
 | Automatic sensitive-info detection (Japanese-aware) | Planned (M5) |
 | Auto-update via Sparkle | Planned (M4) |
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan.
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan and
+[CHANGELOG.md](CHANGELOG.md) for release history.
+
+## Install
+
+Download the latest `Bokashi-vX.Y.Z.zip` from
+[Releases](https://github.com/snaka/Bokashi/releases), unzip, and drag
+`Bokashi.app` into `/Applications`.
+
+The release is **ad-hoc signed**, so macOS Gatekeeper will warn the first
+time you open it:
+
+> "Bokashi" cannot be opened because it is from an unidentified developer.
+
+To open it the first time:
+
+- **Right-click** `Bokashi.app` → **Open** → click **Open** in the dialog.
+
+  *or*
+
+- Try to launch it once normally, then go to **System Settings → Privacy
+  & Security**, scroll to the bottom, and click **Open Anyway**.
+
+Subsequent launches work normally. A signed and notarized release will
+replace this once the maintainer enrols in the Apple Developer Program.
+
+On first capture, macOS will ask for **Screen Recording** permission;
+grant it and re-launch Bokashi if prompted.
 
 ## Build from source
 
