@@ -33,14 +33,12 @@ a tagged GitHub release where useful.
 - [x] Undo / redo via `UndoManager`
 - [x] **First public release: v0.1.0 on GitHub Releases**
 
-## M4 — Privacy masking (manual) → v0.2.0 (in progress)
+## M4 — Privacy masking (manual) → v0.2.0 ✅
 
 - [x] Mosaic tool (rectangle selection, `CIPixellate`)
 - [x] Mosaic stays as an editable annotation layer until export
-- [ ] Settings UI (save destination, hotkeys via `KeyboardShortcuts`)
-- [ ] Sparkle 2 auto-update
-- [ ] Developer ID signing + notarization in CI
-- [ ] **v0.2.0 release with `.dmg`**
+- [x] **v0.2.0 release on GitHub Releases** (mosaic only; Settings UI,
+      Sparkle, and signed distribution deferred — see *Beyond M5*)
 
 ## M5 — Automatic sensitive-info detection (opt-in) → v0.3.0
 
@@ -55,6 +53,10 @@ a tagged GitHub release where useful.
 
 ## Beyond M5
 
+- Settings UI (save destination, hotkey rebinding via `KeyboardShortcuts`)
+- Sparkle 2 auto-update
+- Developer ID signing + notarization in CI (requires Apple Developer Program)
+- Mosaic block-size presets (small / medium / large)
 - Homebrew Cask submission
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
