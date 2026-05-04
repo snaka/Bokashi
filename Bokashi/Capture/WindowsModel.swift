@@ -20,6 +20,7 @@ final class WindowsModel {
             let myBundleID = Bundle.main.bundleIdentifier
             self.windows = content.windows
                 .filter { $0.isOnScreen }
+                .filter { $0.windowLayer == 0 }
                 .filter { ($0.title?.isEmpty == false) }
                 .filter { $0.owningApplication?.bundleIdentifier != myBundleID }
                 .map { sc in
