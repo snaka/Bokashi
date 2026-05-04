@@ -52,6 +52,8 @@ struct EditorView: View {
 
             Spacer()
 
+            detectButton
+
             Button(action: onSave) {
                 Label("Save…", systemImage: "square.and.arrow.down")
             }
@@ -120,6 +122,26 @@ struct EditorView: View {
         }
         .buttonStyle(.borderless)
         .help(preset.label)
+    }
+
+    private var detectButton: some View {
+        Button {
+            Task { @MainActor in
+                await state.detectSensitiveInfo(in: image)
+            }
+        } label: {
+            Group {
+                if state.isDetecting {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Label("Detect", systemImage: "wand.and.rays")
+                }
+            }
+            .frame(minWidth: 64)
+        }
+        .disabled(state.isDetecting)
+        .help("Detect and mask sensitive information")
     }
 
     private var undoShortcuts: some View {
