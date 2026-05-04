@@ -63,7 +63,7 @@ final class EditorState {
             let dx = e.x - s.x
             let dy = e.y - s.y
             return (dx * dx + dy * dy).squareRoot() >= 4
-        case .box(let r), .ellipse(let r):
+        case .box(let r), .ellipse(let r), .mosaic(let r):
             return r.width >= 4 && r.height >= 4
         }
     }

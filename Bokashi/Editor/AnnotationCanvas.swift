@@ -4,6 +4,7 @@ import SwiftUI
 
 struct AnnotationCanvas: View {
     let image: CGImage
+    let mosaicImage: CGImage?
     let state: EditorState
 
     var body: some View {
@@ -21,13 +22,19 @@ struct AnnotationCanvas: View {
                         y: displayRect.origin.y + point.y * scale
                     )
                 }
+                let renderContext = AnnotationDrawing.RenderContext(
+                    transform: transform,
+                    displayScale: scale,
+                    imageDisplayRect: displayRect,
+                    mosaicImage: mosaicImage
+                )
                 for annotation in state.annotations {
                     var ctx = context
-                    AnnotationDrawing.draw(annotation, in: &ctx, transform: transform, displayScale: scale)
+                    AnnotationDrawing.draw(annotation, in: &ctx, with: renderContext)
                 }
                 if let draft = state.draft {
                     var ctx = context
-                    AnnotationDrawing.draw(draft, in: &ctx, transform: transform, displayScale: scale)
+                    AnnotationDrawing.draw(draft, in: &ctx, with: renderContext)
                 }
             }
             .gesture(

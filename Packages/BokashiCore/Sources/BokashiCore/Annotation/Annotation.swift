@@ -7,6 +7,7 @@ public struct Annotation: Identifiable, Hashable, Sendable {
         case box(rect: CGRect)
         case ellipse(rect: CGRect)
         case line(start: CGPoint, end: CGPoint)
+        case mosaic(rect: CGRect)
     }
 
     public let id: UUID
