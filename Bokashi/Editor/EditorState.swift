@@ -20,13 +20,25 @@ final class EditorState {
     @ObservationIgnored
     private var ocrObservations: [OCRRunner.TextObservation] = []
 
+    @ObservationIgnored
+    private var ocrTask: Task<Void, Never>?
+
     func runOCR(on image: CGImage) async {
-        do {
-            ocrObservations = try await OCRRunner.recognize(image)
-        } catch {
-            ocrObservations = []
+        if isOCRReady { return }
+        if let existing = ocrTask {
+            await existing.value
+            return
         }
-        isOCRReady = true
+        let task = Task { @MainActor in
+            do {
+                self.ocrObservations = try await OCRRunner.recognize(image)
+            } catch {
+                self.ocrObservations = []
+            }
+            self.isOCRReady = true
+        }
+        ocrTask = task
+        await task.value
     }
 
     func detectSensitiveInfo(in image: CGImage) async {
@@ -34,9 +46,7 @@ final class EditorState {
         isDetecting = true
         defer { isDetecting = false }
 
-        if !isOCRReady {
-            await runOCR(on: image)
-        }
+        await runOCR(on: image)
 
         let detected = AutoMasker.detect(in: ocrObservations)
         guard !detected.isEmpty else { return }

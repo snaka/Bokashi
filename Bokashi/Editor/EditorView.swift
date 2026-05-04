@@ -125,13 +125,14 @@ struct EditorView: View {
     }
 
     private var detectButton: some View {
-        Button {
+        let isWorking = state.isDetecting || !state.isOCRReady
+        return Button {
             Task { @MainActor in
                 await state.detectSensitiveInfo(in: image)
             }
         } label: {
             Group {
-                if state.isDetecting {
+                if isWorking {
                     ProgressView()
                         .controlSize(.small)
                 } else {
@@ -141,7 +142,9 @@ struct EditorView: View {
             .frame(minWidth: 64)
         }
         .disabled(state.isDetecting)
-        .help("Detect and mask sensitive information")
+        .help(state.isOCRReady
+              ? "Detect and mask sensitive information"
+              : "Scanning text in capture…")
     }
 
     private var undoShortcuts: some View {
