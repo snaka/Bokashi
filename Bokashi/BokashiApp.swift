@@ -6,7 +6,7 @@ struct BokashiApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Bokashi", systemImage: "camera.viewfinder") {
+        MenuBarExtra("Bokashi", image: "MenuBarIcon") {
             menuContent
         }
         .menuBarExtraStyle(.menu)

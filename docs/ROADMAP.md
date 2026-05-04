@@ -40,23 +40,36 @@ a tagged GitHub release where useful.
 - [x] **v0.2.0 release on GitHub Releases** (mosaic only; Settings UI,
       Sparkle, and signed distribution deferred — see *Beyond M5*)
 
-## M5 — Automatic sensitive-info detection (opt-in) → v0.3.0
+## M5 — Automatic sensitive-info detection (opt-in) → v0.3.0 ✅
 
-- [ ] Vision OCR on captured image (`VNRecognizeTextRequest`)
-- [ ] Regex-based detectors: email, phone, credit-card-like sequences,
-      IP address, AWS-key-like strings
-- [ ] Japanese-aware detectors: address patterns, My Number, common name
-      patterns (initial heuristic; CoreML model possible later)
-- [ ] Candidate boxes shown to the user; one click to mask
-- [ ] Fully off by default; explicit opt-in setting
-- [ ] **v0.3.0 release — the differentiator**
+- [x] Vision OCR on captured image (`VNRecognizeTextRequest`)
+- [x] Email detection (regex)
+- [x] Phone numbers and postal addresses (`NSDataDetector` — replaces
+      the originally-planned per-locale regex)
+- [x] Personal names (`NLTagger` `.nameType` with `.joinNames`,
+      Japanese supported — replaces the planned heuristic / CoreML
+      model)
+- [x] Click-to-mask any OCR'd text region (the more general companion
+      to auto-detect; covers anything OCR finds)
+- [x] Auto-mask-on-capture toggle in the menubar (opt-in, persisted)
+- [x] **v0.3.0 release on GitHub Releases**
+
+Detector classes still on the wish list for later: credit-card-like
+sequences, IP addresses, AWS-key-like strings, Japanese My Number.
+`NSDataDetector` already covers most non-email patterns at a higher
+quality than regex would, so further detectors get evaluated case by
+case rather than as a single batch.
 
 ## Beyond M5
 
 - Settings UI (save destination, hotkey rebinding via `KeyboardShortcuts`)
 - Sparkle 2 auto-update
 - Developer ID signing + notarization in CI (requires Apple Developer Program)
+- Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
+- More auto-detectors: credit cards, IP addresses, AWS keys, My Number
+- Reviewable detection candidates (preview boxes before applying)
+- "N items masked" toast after auto-detect
 - Homebrew Cask submission
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
