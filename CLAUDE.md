@@ -50,35 +50,11 @@ swift test --package-path Packages/BokashiCore
 
 ## Permissions and entitlements
 
-- **Screen Recording** is required for capture. We do *not* preflight
-  or request it ourselves; macOS auto-triggers its own permission
-  dialog the moment `SCShareableContent.current` runs without access.
-  On failure we just surface the underlying error.
+- **Screen Recording** is required for capture. Ask via
+  `CGRequestScreenCaptureAccess()` and surface a clear error if denied.
 - **Accessibility** is *not* required for global hotkeys when using
   `KeyboardShortcuts` / Carbon `RegisterEventHotKey`.
 - The app is configured as `LSUIElement` (menubar-only, no Dock icon).
-
-### Dev-only gotcha: Screen Recording grants don't survive ad-hoc rebuilds
-
-Each Xcode build produces a new ad-hoc signing identity. macOS's TCC
-database keys Screen Recording grants by *signing identity hash*, so
-every rebuild appears as a "new app" and silently loses permission —
-even though System Settings still shows the Bokashi toggle as ON.
-
-When this happens, both `CGPreflightScreenCaptureAccess()` returns
-`false` and `SCShareableContent.current` throws, regardless of the
-Settings UI state.
-
-The reliable reset is:
-
-```sh
-# 1. Quit Bokashi (Cmd+Q from the menubar)
-# 2. Clear the TCC entry entirely
-tccutil reset ScreenCapture com.snaka.Bokashi
-# 3. Re-launch and let the system prompt re-grant permission.
-```
-
-Production builds signed with a stable Developer ID do not need this.
 
 ## What goes where
 
