@@ -1,5 +1,6 @@
 import AppKit
 import BokashiCore
+import ScreenCaptureKit
 
 @MainActor
 final class CaptureCoordinator {
@@ -7,9 +8,23 @@ final class CaptureCoordinator {
 
     func captureFullScreen() async {
         guard ensurePermission() else { return }
+        await save { try await captureService.captureMainDisplay() }
+    }
 
+    func captureWindow(byID windowID: CGWindowID) async {
+        guard ensurePermission() else { return }
+        await save {
+            let content = try await SCShareableContent.current
+            guard let window = content.windows.first(where: { $0.windowID == windowID }) else {
+                throw CaptureCoordinatorError.windowNoLongerAvailable
+            }
+            return try await self.captureService.captureWindow(window)
+        }
+    }
+
+    private func save(_ produce: () async throws -> CGImage) async {
         do {
-            let image = try await captureService.captureMainDisplay()
+            let image = try await produce()
             let url = SaveDestination.desktopURL(for: CaptureFilename.make())
             try PNGWriter.write(image, to: url)
             let posted = await NotificationManager.shared.notifyScreenshotSaved(at: url)
@@ -46,5 +61,16 @@ final class CaptureCoordinator {
         alert.informativeText = (error as? LocalizedError)?.errorDescription
             ?? error.localizedDescription
         alert.runModal()
+    }
+}
+
+enum CaptureCoordinatorError: Error, LocalizedError {
+    case windowNoLongerAvailable
+
+    var errorDescription: String? {
+        switch self {
+        case .windowNoLongerAvailable:
+            return "The selected window is no longer available."
+        }
     }
 }

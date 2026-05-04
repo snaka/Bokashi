@@ -44,4 +44,23 @@ final class CaptureService {
             throw CaptureError.underlying(error)
         }
     }
+
+    func captureWindow(_ window: SCWindow) async throws -> CGImage {
+        let filter = SCContentFilter(desktopIndependentWindow: window)
+        let configuration = SCStreamConfiguration()
+        let pixelScale = Double(filter.pointPixelScale)
+        configuration.width = Int(filter.contentRect.width * pixelScale)
+        configuration.height = Int(filter.contentRect.height * pixelScale)
+        configuration.showsCursor = false
+        configuration.ignoreShadowsSingleWindow = true
+
+        do {
+            return try await SCScreenshotManager.captureImage(
+                contentFilter: filter,
+                configuration: configuration
+            )
+        } catch {
+            throw CaptureError.underlying(error)
+        }
+    }
 }
