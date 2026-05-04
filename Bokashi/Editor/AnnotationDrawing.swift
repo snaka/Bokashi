@@ -4,20 +4,26 @@ import SwiftUI
 
 @MainActor
 enum AnnotationDrawing {
+    struct RenderContext {
+        let transform: (CGPoint) -> CGPoint
+        let displayScale: CGFloat
+        let imageDisplayRect: CGRect
+        let mosaicImage: CGImage?
+    }
+
     static func draw(
         _ annotation: Annotation,
         in context: inout GraphicsContext,
-        transform: (CGPoint) -> CGPoint,
-        displayScale: CGFloat
+        with renderContext: RenderContext
     ) {
         let color = Color(annotation.style.color)
-        let lineWidth = annotation.style.lineWidth * displayScale
+        let lineWidth = annotation.style.lineWidth * renderContext.displayScale
 
         switch annotation.kind {
         case .line(let start, let end):
             var path = Path()
-            path.move(to: transform(start))
-            path.addLine(to: transform(end))
+            path.move(to: renderContext.transform(start))
+            path.addLine(to: renderContext.transform(end))
             context.stroke(
                 path,
                 with: .color(color),
@@ -25,7 +31,7 @@ enum AnnotationDrawing {
             )
 
         case .box(let rect):
-            let path = Path(transformRect(rect, with: transform))
+            let path = Path(transformRect(rect, with: renderContext.transform))
             if annotation.style.filled {
                 context.fill(path, with: .color(color))
             } else {
@@ -33,7 +39,7 @@ enum AnnotationDrawing {
             }
 
         case .ellipse(let rect):
-            let path = Path(ellipseIn: transformRect(rect, with: transform))
+            let path = Path(ellipseIn: transformRect(rect, with: renderContext.transform))
             if annotation.style.filled {
                 context.fill(path, with: .color(color))
             } else {
@@ -42,11 +48,21 @@ enum AnnotationDrawing {
 
         case .arrow(let start, let end):
             drawArrow(
-                from: transform(start),
-                to: transform(end),
+                from: renderContext.transform(start),
+                to: renderContext.transform(end),
                 in: &context,
                 lineWidth: lineWidth,
                 color: color
+            )
+
+        case .mosaic(let rect):
+            guard let mosaicImage = renderContext.mosaicImage else { return }
+            let canvasRect = transformRect(rect, with: renderContext.transform)
+            var clipped = context
+            clipped.clip(to: Path(canvasRect))
+            clipped.draw(
+                Image(decorative: mosaicImage, scale: 1),
+                in: renderContext.imageDisplayRect
             )
         }
     }

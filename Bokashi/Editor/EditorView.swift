@@ -3,6 +3,7 @@ import SwiftUI
 
 struct EditorView: View {
     let image: CGImage
+    let mosaicImage: CGImage?
     let state: EditorState
     let onDone: () -> Void
     let onSave: () -> Void
@@ -14,7 +15,7 @@ struct EditorView: View {
         VStack(spacing: 0) {
             toolbar
             Divider()
-            AnnotationCanvas(image: image, state: state)
+            AnnotationCanvas(image: image, mosaicImage: mosaicImage, state: state)
         }
         .background(Color(nsColor: .windowBackgroundColor))
         .background(undoShortcuts)

@@ -11,12 +11,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     }
 
     private let image: CGImage
+    private let mosaicImage: CGImage?
     private let state = EditorState()
     private var outcome: Outcome = .copyOnClose
     var onClosed: (() -> Void)?
 
     init(image: CGImage) {
         self.image = image
+        self.mosaicImage = MosaicRenderer.apply(to: image)
 
         let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
@@ -24,6 +26,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         let host = NSHostingController(
             rootView: EditorView(
                 image: image,
+                mosaicImage: mosaicImage,
                 state: state,
                 onDone: { [weak self] in self?.done() },
                 onSave: { [weak self] in self?.save() },
@@ -76,7 +79,11 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     }
 
     private var renderedImage: CGImage {
-        AnnotationFlattener.flatten(image: image, annotations: state.annotations)
+        AnnotationFlattener.flatten(
+            image: image,
+            mosaicImage: mosaicImage,
+            annotations: state.annotations
+        )
     }
 
     private func done() {

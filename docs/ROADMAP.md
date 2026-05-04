@@ -33,10 +33,10 @@ a tagged GitHub release where useful.
 - [x] Undo / redo via `UndoManager`
 - [x] **First public release: v0.1.0 on GitHub Releases**
 
-## M4 — Privacy masking (manual) → v0.2.0
+## M4 — Privacy masking (manual) → v0.2.0 (in progress)
 
-- [ ] Mosaic tool (rectangle selection, `CIPixellate`)
-- [ ] Mosaic stays as an editable annotation layer until export
+- [x] Mosaic tool (rectangle selection, `CIPixellate`)
+- [x] Mosaic stays as an editable annotation layer until export
 - [ ] Settings UI (save destination, hotkeys via `KeyboardShortcuts`)
 - [ ] Sparkle 2 auto-update
 - [ ] Developer ID signing + notarization in CI

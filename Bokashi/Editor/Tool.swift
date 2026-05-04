@@ -8,6 +8,7 @@ enum Tool: CaseIterable, Hashable {
     case ellipse
     case filledEllipse
     case line
+    case mosaic
 
     var label: String {
         switch self {
@@ -17,6 +18,7 @@ enum Tool: CaseIterable, Hashable {
         case .ellipse: return "Ellipse"
         case .filledEllipse: return "Filled Ellipse"
         case .line: return "Line"
+        case .mosaic: return "Mosaic"
         }
     }
 
@@ -28,6 +30,7 @@ enum Tool: CaseIterable, Hashable {
         case .ellipse: return "circle"
         case .filledEllipse: return "circle.fill"
         case .line: return "line.diagonal"
+        case .mosaic: return "square.grid.3x3.fill"
         }
     }
 
@@ -36,6 +39,10 @@ enum Tool: CaseIterable, Hashable {
         case .filledBox, .filledEllipse: return true
         default: return false
         }
+    }
+
+    var ignoresStyle: Bool {
+        self == .mosaic
     }
 
     func makeAnnotation(from start: CGPoint, to end: CGPoint, style: AnnotationStyle) -> Annotation {
@@ -48,6 +55,8 @@ enum Tool: CaseIterable, Hashable {
             return Annotation(kind: .ellipse(rect: .between(start, end)), style: style)
         case .line:
             return Annotation(kind: .line(start: start, end: end), style: style)
+        case .mosaic:
+            return Annotation(kind: .mosaic(rect: .between(start, end)), style: style)
         }
     }
 }
