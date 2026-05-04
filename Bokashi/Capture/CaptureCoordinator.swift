@@ -5,6 +5,7 @@ import ScreenCaptureKit
 @MainActor
 final class CaptureCoordinator {
     private let captureService = CaptureService()
+    private let regionSelector = RegionSelector()
 
     func captureFullScreen() async {
         guard ensurePermission() else { return }
@@ -20,6 +21,13 @@ final class CaptureCoordinator {
             }
             return try await self.captureService.captureWindow(window)
         }
+    }
+
+    func captureRegion() async {
+        guard ensurePermission() else { return }
+        guard let screenRect = await regionSelector.selectRegion() else { return }
+        try? await Task.sleep(for: .milliseconds(100))
+        await save { try await self.captureService.captureRegion(in: screenRect) }
     }
 
     private func save(_ produce: () async throws -> CGImage) async {

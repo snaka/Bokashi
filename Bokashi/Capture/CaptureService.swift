@@ -1,3 +1,4 @@
+import AppKit
 import CoreGraphics
 import ScreenCaptureKit
 
@@ -43,6 +44,28 @@ final class CaptureService {
         } catch {
             throw CaptureError.underlying(error)
         }
+    }
+
+    func captureRegion(in screenRect: CGRect) async throws -> CGImage {
+        let fullImage = try await captureMainDisplay()
+
+        guard let screen = NSScreen.main else {
+            throw CaptureError.noDisplay
+        }
+        let scale = screen.backingScaleFactor
+        let screenHeight = screen.frame.height
+        let topLeftY = screenHeight - screenRect.origin.y - screenRect.height
+        let pixelRect = CGRect(
+            x: screenRect.origin.x * scale,
+            y: topLeftY * scale,
+            width: screenRect.width * scale,
+            height: screenRect.height * scale
+        ).integral
+
+        guard let cropped = fullImage.cropping(to: pixelRect) else {
+            throw CaptureError.noDisplay
+        }
+        return cropped
     }
 
     func captureWindow(_ window: SCWindow) async throws -> CGImage {
