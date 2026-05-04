@@ -17,10 +17,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     init(image: CGImage) {
         self.image = image
 
-        let window = Self.makeWindow(forImage: image)
+        let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
         window.delegate = self
-        window.contentViewController = NSHostingController(
+        let host = NSHostingController(
             rootView: EditorView(
                 image: image,
                 onDone: { [weak self] in self?.done() },
@@ -28,12 +28,16 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
                 onDiscard: { [weak self] in self?.discard() }
             )
         )
+        host.sizingOptions = []
+        window.contentViewController = host
+        window.setContentSize(contentSize)
+        window.center()
     }
 
     @available(*, unavailable)
     required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    private static func makeWindow(forImage image: CGImage) -> NSWindow {
+    private static func makeWindow(forImage image: CGImage) -> (NSWindow, NSSize) {
         let scale = NSScreen.main?.backingScaleFactor ?? 2
         let imageWidthPoints = CGFloat(image.width) / scale
         let imageHeightPoints = CGFloat(image.height) / scale
@@ -48,18 +52,18 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         let scaleFactor = min(widthRatio, heightRatio)
         let contentWidth = max(420, imageWidthPoints * scaleFactor)
         let contentHeight = imageHeightPoints * scaleFactor + toolbarHeight
+        let contentSize = NSSize(width: contentWidth, height: contentHeight)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: contentWidth, height: contentHeight),
+            contentRect: NSRect(origin: .zero, size: contentSize),
             styleMask: [.titled, .closable, .resizable, .miniaturizable],
             backing: .buffered,
             defer: false
         )
         window.title = makeTitle()
         window.minSize = CGSize(width: 420, height: 320)
-        window.center()
         window.isReleasedWhenClosed = false
-        return window
+        return (window, contentSize)
     }
 
     private static func makeTitle() -> String {
