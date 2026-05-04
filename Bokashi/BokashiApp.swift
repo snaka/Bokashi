@@ -21,6 +21,11 @@ struct BokashiApp: App {
                 await appDelegate.captureCoordinator.captureFullScreen()
             }
         }
+        Button("Capture Region…") {
+            Task { @MainActor in
+                await appDelegate.captureCoordinator.captureRegion()
+            }
+        }
         Menu("Capture Window") {
             Button("Refresh") {
                 Task { @MainActor in

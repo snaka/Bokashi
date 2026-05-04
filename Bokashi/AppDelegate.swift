@@ -20,5 +20,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 await self?.captureCoordinator.captureFullScreen()
             }
         }
+        KeyboardShortcuts.onKeyDown(for: .captureRegion) { [weak self] in
+            Task { @MainActor in
+                await self?.captureCoordinator.captureRegion()
+            }
+        }
     }
 }
