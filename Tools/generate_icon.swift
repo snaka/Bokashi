@@ -177,23 +177,22 @@ func renderAppIcon(pixelSize: Int) -> Data? {
 
 // MARK: - Menubar icon: simplified single-color silhouette (template)
 
-func renderMenuBarSilhouette(in canvas: CGFloat) {
+func menuBarSilhouettePath(in canvas: CGFloat) -> NSBezierPath {
     let centerX = canvas / 2
     let suitTopY: CGFloat = canvas * 0.45
     let shoulderHalfWidth: CGFloat = canvas * 0.18
     let baseHalfWidth: CGFloat = canvas * 0.46
 
-    NSColor.black.setFill()
+    let path = NSBezierPath()
 
-    // Full bust silhouette (head + suit)
-    let suit = NSBezierPath()
-    suit.move(to: NSPoint(x: centerX - baseHalfWidth, y: 0))
-    suit.line(to: NSPoint(x: centerX + baseHalfWidth, y: 0))
-    suit.line(to: NSPoint(x: centerX + shoulderHalfWidth, y: suitTopY))
-    suit.line(to: NSPoint(x: centerX - shoulderHalfWidth, y: suitTopY))
-    suit.close()
-    suit.fill()
+    // Suit
+    path.move(to: NSPoint(x: centerX - baseHalfWidth, y: 0))
+    path.line(to: NSPoint(x: centerX + baseHalfWidth, y: 0))
+    path.line(to: NSPoint(x: centerX + shoulderHalfWidth, y: suitTopY))
+    path.line(to: NSPoint(x: centerX - shoulderHalfWidth, y: suitTopY))
+    path.close()
 
+    // Head (combined head + hair)
     let headWidth: CGFloat = canvas * 0.40
     let headHeight: CGFloat = canvas * 0.46
     let headBottomY = suitTopY - canvas * 0.04
@@ -203,18 +202,59 @@ func renderMenuBarSilhouette(in canvas: CGFloat) {
         width: headWidth,
         height: headHeight
     )
-    NSBezierPath(ovalIn: headRect).fill()
+    path.append(NSBezierPath(ovalIn: headRect))
 
-    // Left half: solid block "censor bar" — covers the left half of the
-    // bust so the right half remains a recognisable silhouette while the
-    // left becomes a featureless rectangle, mirroring the half-mosaic
-    // treatment in the app icon.
-    NSBezierPath(rect: NSRect(x: 0, y: 0, width: centerX, height: canvas)).fill()
+    return path
+}
+
+// Renders the silhouette as a black-on-transparent CGImage at the given
+// canvas size, ready for CIPixellate.
+func renderSilhouetteCGImage(canvas: CGFloat) -> CGImage {
+    let bitmap = makeBitmap(pixels: Int(canvas))
+    draw(into: bitmap) {
+        NSColor.black.setFill()
+        menuBarSilhouettePath(in: canvas).fill()
+    }
+    return bitmap.cgImage!
 }
 
 func renderMenuBarIcon(pixelSize: Int) -> Data? {
+    let canvas = CGFloat(pixelSize)
+    let silhouetteCGImage = renderSilhouetteCGImage(canvas: canvas)
+    // ~6 pixel blocks across so the cut-outs read at 18 pt without
+    // turning the silhouette into a single blob.
+    guard let pixelated = pixellate(silhouetteCGImage, scale: max(2, Float(canvas) / 6)) else {
+        return nil
+    }
+
     let bitmap = makeBitmap(pixels: pixelSize)
-    draw(into: bitmap) { renderMenuBarSilhouette(in: CGFloat(pixelSize)) }
+    draw(into: bitmap) {
+        let halfWidth = canvas / 2
+        let leftHalf = NSRect(x: 0, y: 0, width: halfWidth, height: canvas)
+        let rightHalf = NSRect(x: halfWidth, y: 0, width: halfWidth, height: canvas)
+        let fullRect = NSRect(x: 0, y: 0, width: canvas, height: canvas)
+
+        NSColor.black.setFill()
+
+        // Left half: solid block with the pixellated person punched out so
+        // the menubar background shows through the cut-outs. Tinted black
+        // on a light menubar → black block + light cut-outs. Tinted white
+        // on a dark menubar → white block + dark cut-outs. Either way the
+        // "person mosaic, inverted" reading survives.
+        NSGraphicsContext.current?.saveGraphicsState()
+        NSBezierPath(rect: leftHalf).addClip()
+        leftHalf.fill()
+        NSGraphicsContext.current?.cgContext.setBlendMode(.destinationOut)
+        NSImage(cgImage: pixelated, size: fullRect.size).draw(in: fullRect)
+        NSGraphicsContext.current?.cgContext.setBlendMode(.normal)
+        NSGraphicsContext.current?.restoreGraphicsState()
+
+        // Right half: regular silhouette
+        NSGraphicsContext.current?.saveGraphicsState()
+        NSBezierPath(rect: rightHalf).addClip()
+        menuBarSilhouettePath(in: canvas).fill()
+        NSGraphicsContext.current?.restoreGraphicsState()
+    }
     return bitmap.representation(using: .png, properties: [:])
 }
 
