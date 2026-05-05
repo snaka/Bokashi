@@ -220,38 +220,34 @@ func renderSilhouetteCGImage(canvas: CGFloat) -> CGImage {
 
 func renderMenuBarIcon(pixelSize: Int) -> Data? {
     let canvas = CGFloat(pixelSize)
+    let halfWidth = canvas / 2
+
+    // Pixellated silhouette (black on transparent) for the left half.
     let silhouetteCGImage = renderSilhouetteCGImage(canvas: canvas)
-    // ~6 pixel blocks across so the cut-outs read at 18 pt without
-    // turning the silhouette into a single blob.
     guard let pixelated = pixellate(silhouetteCGImage, scale: max(2, Float(canvas) / 6)) else {
         return nil
     }
 
     let bitmap = makeBitmap(pixels: pixelSize)
     draw(into: bitmap) {
-        let halfWidth = canvas / 2
         let leftHalf = NSRect(x: 0, y: 0, width: halfWidth, height: canvas)
         let rightHalf = NSRect(x: halfWidth, y: 0, width: halfWidth, height: canvas)
         let fullRect = NSRect(x: 0, y: 0, width: canvas, height: canvas)
 
-        NSColor.black.setFill()
-
-        // Left half: solid block with the pixellated person punched out so
-        // the menubar background shows through the cut-outs. Tinted black
-        // on a light menubar → black block + light cut-outs. Tinted white
-        // on a dark menubar → white block + dark cut-outs. Either way the
-        // "person mosaic, inverted" reading survives.
+        // Left half: white background with the black pixellated person.
         NSGraphicsContext.current?.saveGraphicsState()
         NSBezierPath(rect: leftHalf).addClip()
+        NSColor.white.setFill()
         leftHalf.fill()
-        NSGraphicsContext.current?.cgContext.setBlendMode(.destinationOut)
         NSImage(cgImage: pixelated, size: fullRect.size).draw(in: fullRect)
-        NSGraphicsContext.current?.cgContext.setBlendMode(.normal)
         NSGraphicsContext.current?.restoreGraphicsState()
 
-        // Right half: regular silhouette
+        // Right half: black background with the white sharp silhouette.
         NSGraphicsContext.current?.saveGraphicsState()
         NSBezierPath(rect: rightHalf).addClip()
+        NSColor.black.setFill()
+        rightHalf.fill()
+        NSColor.white.setFill()
         menuBarSilhouettePath(in: canvas).fill()
         NSGraphicsContext.current?.restoreGraphicsState()
     }
@@ -357,7 +353,7 @@ try writeText(
         { "filename" : "menubar@3x.png", "scale" : "3x", "idiom" : "universal" }
       ],
       "info" : { "version" : 1, "author" : "xcode" },
-      "properties" : { "template-rendering-intent" : "template" }
+      "properties" : { "template-rendering-intent" : "original" }
     }
 
     """,
