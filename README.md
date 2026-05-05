@@ -1,6 +1,10 @@
-# Bokashi
+<p align="center">
+  <img src="docs/images/icon.png" width="128" alt="Bokashi app icon" />
+</p>
 
-A privacy-aware screenshot tool for macOS.
+<h1 align="center">Bokashi</h1>
+
+<p align="center">A privacy-aware screenshot tool for macOS.</p>
 
 > **Bokashi** (ぼかし) is the Japanese word for *blur* or *obscure*.
 > Not to be confused with the composting method of the same name 🌱.
