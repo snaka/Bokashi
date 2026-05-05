@@ -185,7 +185,7 @@ func renderMenuBarSilhouette(in canvas: CGFloat) {
 
     NSColor.black.setFill()
 
-    // Suit / torso
+    // Full bust silhouette (head + suit)
     let suit = NSBezierPath()
     suit.move(to: NSPoint(x: centerX - baseHalfWidth, y: 0))
     suit.line(to: NSPoint(x: centerX + baseHalfWidth, y: 0))
@@ -194,7 +194,6 @@ func renderMenuBarSilhouette(in canvas: CGFloat) {
     suit.close()
     suit.fill()
 
-    // Combined head + hair as one full oval (template = single color)
     let headWidth: CGFloat = canvas * 0.40
     let headHeight: CGFloat = canvas * 0.46
     let headBottomY = suitTopY - canvas * 0.04
@@ -205,6 +204,12 @@ func renderMenuBarSilhouette(in canvas: CGFloat) {
         height: headHeight
     )
     NSBezierPath(ovalIn: headRect).fill()
+
+    // Left half: solid block "censor bar" — covers the left half of the
+    // bust so the right half remains a recognisable silhouette while the
+    // left becomes a featureless rectangle, mirroring the half-mosaic
+    // treatment in the app icon.
+    NSBezierPath(rect: NSRect(x: 0, y: 0, width: centerX, height: canvas)).fill()
 }
 
 func renderMenuBarIcon(pixelSize: Int) -> Data? {
