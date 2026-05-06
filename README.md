@@ -33,33 +33,30 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | On-device sensitive-info detection (email / phone / address / name) | ✅ |
 | Click-to-mask any OCR'd text region | ✅ |
 | Auto-mask on capture (menubar toggle) | ✅ |
-| Auto-update via Sparkle, signed releases | Planned (later) |
+| Developer ID signed + notarized releases | ✅ |
+| Homebrew Cask install (`snaka/tap/bokashi`) | ✅ |
+| Auto-update via Sparkle | Planned (later) |
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan and
 [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## Install
 
-Download the latest `Bokashi-vX.Y.Z.zip` from
-[Releases](https://github.com/snaka/Bokashi/releases), unzip, and drag
+### Homebrew (recommended)
+
+```sh
+brew install --cask snaka/tap/bokashi
+```
+
+This pulls the latest signed and notarized `.dmg` from
+[Releases](https://github.com/snaka/Bokashi/releases) via the
+[`snaka/homebrew-tap`](https://github.com/snaka/homebrew-tap) tap.
+
+### Manual download
+
+Download the latest `Bokashi-X.Y.Z.dmg` from
+[Releases](https://github.com/snaka/Bokashi/releases), open it, and drag
 `Bokashi.app` into `/Applications`.
-
-The release is **ad-hoc signed**, so macOS Gatekeeper will warn the first
-time you open it:
-
-> "Bokashi" cannot be opened because it is from an unidentified developer.
-
-To open it the first time:
-
-- **Right-click** `Bokashi.app` → **Open** → click **Open** in the dialog.
-
-  *or*
-
-- Try to launch it once normally, then go to **System Settings → Privacy
-  & Security**, scroll to the bottom, and click **Open Anyway**.
-
-Subsequent launches work normally. A signed and notarized release will
-replace this once the maintainer enrols in the Apple Developer Program.
 
 On first capture, macOS will ask for **Screen Recording** permission;
 grant it and re-launch Bokashi if prompted.

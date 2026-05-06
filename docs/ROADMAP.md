@@ -62,14 +62,16 @@ case rather than as a single batch.
 
 ## Beyond M5
 
+- [x] Developer ID signing + notarization in CI
+- [x] Homebrew Cask distribution via [`snaka/homebrew-tap`](https://github.com/snaka/homebrew-tap)
+      (`brew install --cask snaka/tap/bokashi`)
 - Settings UI (save destination, hotkey rebinding via `KeyboardShortcuts`)
 - Sparkle 2 auto-update
-- Developer ID signing + notarization in CI (requires Apple Developer Program)
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
 - More auto-detectors: credit cards, IP addresses, AWS keys, My Number
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
-- Homebrew Cask submission
+- Submit to the official `homebrew/cask` repo (deferred until v1.0)
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
