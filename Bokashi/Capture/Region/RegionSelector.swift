@@ -2,7 +2,7 @@ import AppKit
 
 @MainActor
 final class RegionSelector {
-    private var window: RegionOverlayWindow?
+    private var windows: [RegionOverlayWindow] = []
     private var continuation: CheckedContinuation<CGRect?, Never>?
 
     func selectRegion() async -> CGRect? {
@@ -10,23 +10,30 @@ final class RegionSelector {
             return nil
         }
 
-        guard let screen = NSScreen.main else { return nil }
+        let screens = NSScreen.screens
+        guard !screens.isEmpty else { return nil }
 
         return await withCheckedContinuation { continuation in
             self.continuation = continuation
 
-            let win = RegionOverlayWindow(screenFrame: screen.frame) { [weak self] rect in
-                self?.finish(with: rect)
+            for screen in screens {
+                let win = RegionOverlayWindow(screenFrame: screen.frame) { [weak self] rect in
+                    self?.finish(with: rect)
+                }
+                windows.append(win)
             }
-            self.window = win
             NSApp.activate(ignoringOtherApps: true)
-            win.makeKeyAndOrderFront(nil)
+            for win in windows {
+                win.makeKeyAndOrderFront(nil)
+            }
         }
     }
 
     private func finish(with rect: CGRect?) {
-        window?.orderOut(nil)
-        window = nil
+        for win in windows {
+            win.orderOut(nil)
+        }
+        windows.removeAll()
         let cont = continuation
         continuation = nil
         cont?.resume(returning: rect)
