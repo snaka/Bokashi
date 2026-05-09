@@ -73,8 +73,11 @@ case rather than as a single batch.
         select → Vision OCR → reviewable list of detected lines)
 - Click-to-pick capture window via cursor highlight (à la macOS
   `⇧⌘4` → Space), as an alternative to the current menu-driven picker
-- Multi-display support (region overlay spanning every connected
-  display, capture from non-main displays)
+- Multi-display support
+  - [x] Region overlay spans every connected display; capture routes
+        to the right display (#18)
+  - [ ] Full-screen capture targets the display the cursor is on
+        (currently still hardcoded to the main display)
 - Sparkle 2 auto-update
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
