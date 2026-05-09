@@ -1,13 +1,15 @@
 import SwiftUI
 
 struct SettingsView: View {
+    var onAddFromSelection: () -> Void
+
     var body: some View {
         TabView {
-            CustomTermsSettingsView()
+            CustomTermsSettingsView(onAddFromSelection: onAddFromSelection)
                 .tabItem {
                     Label("Custom Terms", systemImage: "eye.slash")
                 }
         }
-        .frame(width: 480, height: 360)
+        .frame(width: 520, height: 400)
     }
 }

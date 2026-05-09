@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct CustomTermsSettingsView: View {
+    var onAddFromSelection: () -> Void
+
     @State private var manager = CustomTermsManager.shared
     @State private var selection: Int?
     @State private var draft: String = ""
@@ -30,6 +32,17 @@ struct CustomTermsSettingsView: View {
                 Spacer()
                 Button("Remove", action: removeSelected)
                     .disabled(selection == nil)
+            }
+
+            Divider()
+
+            HStack {
+                Button {
+                    onAddFromSelection()
+                } label: {
+                    Label("Add from Screen Selection…", systemImage: "rectangle.dashed.badge.record")
+                }
+                Spacer()
             }
         }
         .padding()
