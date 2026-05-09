@@ -48,7 +48,10 @@ final class EditorState {
 
         await runOCR(on: image)
 
-        let detected = AutoMasker.detect(in: ocrObservations)
+        let detected = AutoMasker.detect(
+            in: ocrObservations,
+            customTerms: CustomTermsManager.shared.terms
+        )
         guard !detected.isEmpty else { return }
 
         undoManager?.beginUndoGrouping()

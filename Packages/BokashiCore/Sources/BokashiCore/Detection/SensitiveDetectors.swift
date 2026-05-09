@@ -6,6 +6,7 @@ public enum SensitiveKind: Hashable, Sendable {
     case phoneNumber
     case address
     case personalName
+    case customTerm
 }
 
 public enum SensitiveDetectors {
@@ -21,12 +22,13 @@ public enum SensitiveDetectors {
         }
     }
 
-    public static func detectAll(in text: String) -> [Match] {
+    public static func detectAll(in text: String, customTerms: [String] = []) -> [Match] {
         guard !text.isEmpty else { return [] }
         var matches: [Match] = []
         matches.append(contentsOf: detectEmails(in: text))
         matches.append(contentsOf: detectViaDataDetector(in: text))
         matches.append(contentsOf: detectPersonalNames(in: text))
+        matches.append(contentsOf: detectCustomTerms(in: text, terms: customTerms))
         return matches
     }
 
@@ -77,6 +79,37 @@ public enum SensitiveDetectors {
                     matchedText: nsText.substring(with: result.range)
                 )
             )
+        }
+        return matches
+    }
+
+    // MARK: - Custom terms (user-defined literal substrings, case-insensitive)
+
+    private static func detectCustomTerms(in text: String, terms: [String]) -> [Match] {
+        guard !terms.isEmpty else { return [] }
+        let nsText = text as NSString
+        let fullLength = nsText.length
+        var matches: [Match] = []
+        var seen = Set<String>()
+        for rawTerm in terms {
+            let term = rawTerm.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !term.isEmpty else { continue }
+            let key = term.lowercased()
+            guard seen.insert(key).inserted else { continue }
+            var cursor = 0
+            while cursor < fullLength {
+                let searchRange = NSRange(location: cursor, length: fullLength - cursor)
+                let found = nsText.range(of: term, options: .caseInsensitive, range: searchRange)
+                if found.location == NSNotFound { break }
+                matches.append(
+                    Match(
+                        kind: .customTerm,
+                        nsRange: found,
+                        matchedText: nsText.substring(with: found)
+                    )
+                )
+                cursor = found.location + max(found.length, 1)
+            }
         }
         return matches
     }
