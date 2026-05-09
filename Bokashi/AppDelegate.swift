@@ -4,7 +4,11 @@ import KeyboardShortcuts
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let editorPresenter = EditorPresenter()
-    lazy var captureCoordinator = CaptureCoordinator(editorPresenter: editorPresenter)
+    let customTermsExtractionPresenter = CustomTermsExtractionPresenter()
+    lazy var captureCoordinator = CaptureCoordinator(
+        editorPresenter: editorPresenter,
+        customTermsExtractionPresenter: customTermsExtractionPresenter
+    )
     let windowsModel = WindowsModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {

@@ -7,9 +7,14 @@ final class CaptureCoordinator {
     private let captureService = CaptureService()
     private let regionSelector = RegionSelector()
     private let editorPresenter: EditorPresenter
+    private let customTermsExtractionPresenter: CustomTermsExtractionPresenter
 
-    init(editorPresenter: EditorPresenter) {
+    init(
+        editorPresenter: EditorPresenter,
+        customTermsExtractionPresenter: CustomTermsExtractionPresenter
+    ) {
         self.editorPresenter = editorPresenter
+        self.customTermsExtractionPresenter = customTermsExtractionPresenter
     }
 
     func captureFullScreen() async {
@@ -33,6 +38,34 @@ final class CaptureCoordinator {
         guard let screenRect = await regionSelector.selectRegion() else { return }
         try? await Task.sleep(for: .milliseconds(100))
         await present { try await self.captureService.captureRegion(in: screenRect) }
+    }
+
+    func captureRegionForCustomTerms() async {
+        guard ensurePermission() else { return }
+        guard let screenRect = await regionSelector.selectRegion() else { return }
+        try? await Task.sleep(for: .milliseconds(100))
+        do {
+            let image = try await captureService.captureRegion(in: screenRect)
+            let observations = try await OCRRunner.recognize(image)
+            let candidates = observations
+                .map { $0.text.trimmingCharacters(in: .whitespacesAndNewlines) }
+                .filter { !$0.isEmpty }
+            guard !candidates.isEmpty else {
+                presentNoTextDetected()
+                return
+            }
+            customTermsExtractionPresenter.present(candidates: candidates)
+        } catch {
+            presentError(error)
+        }
+    }
+
+    private func presentNoTextDetected() {
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "No text detected"
+        alert.informativeText = "Bokashi could not find any text in the selected region."
+        alert.runModal()
     }
 
     private func present(_ produce: () async throws -> CGImage) async {

@@ -66,6 +66,9 @@ case rather than as a single batch.
 - [x] Homebrew Cask distribution via [`snaka/homebrew-tap`](https://github.com/snaka/homebrew-tap)
       (`brew install --cask snaka/tap/bokashi`)
 - Settings UI (save destination, hotkey rebinding via `KeyboardShortcuts`)
+  - [x] Settings scene scaffolding + custom-term list (user-defined
+        substrings auto-masked on capture, persisted as JSON in
+        `~/Library/Application Support/Bokashi/custom-terms.json`)
 - Sparkle 2 auto-update
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)

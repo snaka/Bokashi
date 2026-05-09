@@ -10,6 +10,14 @@ struct BokashiApp: App {
             menuContent
         }
         .menuBarExtraStyle(.menu)
+
+        Settings {
+            SettingsView(onAddFromSelection: {
+                Task { @MainActor in
+                    await appDelegate.captureCoordinator.captureRegionForCustomTerms()
+                }
+            })
+        }
     }
 
     @ViewBuilder
@@ -50,6 +58,10 @@ struct BokashiApp: App {
         }
         Divider()
         Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
+        SettingsLink {
+            Text("Settings…")
+        }
+        .keyboardShortcut(",")
         Divider()
         Button("Quit Bokashi") {
             NSApplication.shared.terminate(nil)
