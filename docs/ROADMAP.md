@@ -71,6 +71,10 @@ case rather than as a single batch.
         `~/Library/Application Support/Bokashi/custom-terms.json`)
   - [x] Bulk-register custom terms from a screen selection (region
         select → Vision OCR → reviewable list of detected lines)
+- Click-to-pick capture window via cursor highlight (à la macOS
+  `⇧⌘4` → Space), as an alternative to the current menu-driven picker
+- Multi-display support (region overlay spanning every connected
+  display, capture from non-main displays)
 - Sparkle 2 auto-update
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
@@ -87,9 +91,5 @@ case rather than as a single batch.
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
 - Submit to the official `homebrew/cask` repo (deferred until v1.0)
-- Click-to-pick capture window via cursor highlight (à la macOS
-  `⇧⌘4` → Space), as an alternative to the current menu-driven picker
-- Multi-display support (region overlay spanning every connected
-  display, capture from non-main displays)
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
