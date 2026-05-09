@@ -69,12 +69,27 @@ case rather than as a single batch.
   - [x] Settings scene scaffolding + custom-term list (user-defined
         substrings auto-masked on capture, persisted as JSON in
         `~/Library/Application Support/Bokashi/custom-terms.json`)
+  - [x] Bulk-register custom terms from a screen selection (region
+        select → Vision OCR → reviewable list of detected lines)
 - Sparkle 2 auto-update
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
+- Expand annotation line-width presets from 3 to ~5 levels (currently
+  thin / medium / thick in `AnnotationStyle.WidthPreset`)
+- Text annotation tool (typed labels / captions on top of the image,
+  with font-size and color controls)
+- Eraser for placed masks (click a mosaic annotation to remove it,
+  including ones added by auto-mask)
+- Temporarily highlight masked regions in the editor (toggle to
+  visualize which areas are masked, for last-mile coverage check
+  before export)
 - More auto-detectors: credit cards, IP addresses, AWS keys, My Number
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
 - Submit to the official `homebrew/cask` repo (deferred until v1.0)
+- Click-to-pick capture window via cursor highlight (à la macOS
+  `⇧⌘4` → Space), as an alternative to the current menu-driven picker
+- Multi-display support (region overlay spanning every connected
+  display, capture from non-main displays)
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
