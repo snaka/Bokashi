@@ -23,6 +23,16 @@ final class EditorState {
     @ObservationIgnored
     private var ocrTask: Task<Void, Never>?
 
+    /// Auto-mask annotations carry the detector that produced them so the
+    /// editor can color-code them in debug mode. Manual masks have no
+    /// entry here.
+    @ObservationIgnored
+    private(set) var detectorSources: [UUID: String] = [:]
+
+    func detectorSource(for annotationID: UUID) -> String? {
+        detectorSources[annotationID]
+    }
+
     func runOCR(on image: CGImage) async {
         if isOCRReady { return }
         if let existing = ocrTask {
@@ -48,16 +58,17 @@ final class EditorState {
 
         await runOCR(on: image)
 
-        let detected = await AutoMasker.detect(
+        let detections = await AutoMasker.detect(
             in: image,
             observations: ocrObservations,
             customTerms: CustomTermsManager.shared.terms
         )
-        guard !detected.isEmpty else { return }
+        guard !detections.isEmpty else { return }
 
         undoManager?.beginUndoGrouping()
-        for annotation in detected {
-            addAnnotation(annotation)
+        for detection in detections {
+            detectorSources[detection.annotation.id] = detection.detectorIdentifier
+            addAnnotation(detection.annotation)
         }
         undoManager?.setActionName("Auto-Mask Sensitive Info")
         undoManager?.endUndoGrouping()

@@ -23,4 +23,21 @@ public enum PNGWriter {
             throw WriteError.finalizationFailed
         }
     }
+
+    public static func data(from image: CGImage) throws -> Data {
+        let buffer = NSMutableData()
+        guard let destination = CGImageDestinationCreateWithData(
+            buffer,
+            UTType.png.identifier as CFString,
+            1,
+            nil
+        ) else {
+            throw WriteError.destinationCreationFailed
+        }
+        CGImageDestinationAddImage(destination, image, nil)
+        guard CGImageDestinationFinalize(destination) else {
+            throw WriteError.finalizationFailed
+        }
+        return buffer as Data
+    }
 }

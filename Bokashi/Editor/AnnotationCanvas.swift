@@ -7,6 +7,8 @@ struct AnnotationCanvas: View {
     let mosaicImage: CGImage?
     let state: EditorState
 
+    @State private var dev = DeveloperSettings.shared
+
     var body: some View {
         GeometryReader { geometry in
             Canvas { context, size in
@@ -31,6 +33,13 @@ struct AnnotationCanvas: View {
                 for annotation in state.annotations {
                     var ctx = context
                     AnnotationDrawing.draw(annotation, in: &ctx, with: renderContext)
+                }
+                if dev.highlightMaskSource {
+                    drawDebugSourceOverlay(
+                        context: context,
+                        scale: scale,
+                        transform: transform
+                    )
                 }
                 if let draft = state.draft {
                     var ctx = context
@@ -69,6 +78,39 @@ struct AnnotationCanvas: View {
             let h = size.height
             let w = h * imageAspect
             return CGRect(x: (size.width - w) / 2, y: 0, width: w, height: h)
+        }
+    }
+
+    private func drawDebugSourceOverlay(
+        context: GraphicsContext,
+        scale: CGFloat,
+        transform: (CGPoint) -> CGPoint
+    ) {
+        for annotation in state.annotations {
+            guard case .mosaic(let rect) = annotation.kind,
+                  let source = state.detectorSource(for: annotation.id)
+            else { continue }
+            let topLeft = transform(rect.origin)
+            let displayRect = CGRect(
+                x: topLeft.x,
+                y: topLeft.y,
+                width: rect.width * scale,
+                height: rect.height * scale
+            )
+            var ctx = context
+            ctx.stroke(
+                Path(displayRect),
+                with: .color(Self.debugColor(for: source)),
+                style: StrokeStyle(lineWidth: 3, lineJoin: .round, dash: [6, 4])
+            )
+        }
+    }
+
+    private static func debugColor(for source: String) -> Color {
+        switch source {
+        case "ocr": return .blue
+        case "ollama": return .orange
+        default: return .gray
         }
     }
 
