@@ -48,8 +48,9 @@ final class EditorState {
 
         await runOCR(on: image)
 
-        let detected = AutoMasker.detect(
-            in: ocrObservations,
+        let detected = await AutoMasker.detect(
+            in: image,
+            observations: ocrObservations,
             customTerms: CustomTermsManager.shared.terms
         )
         guard !detected.isEmpty else { return }
