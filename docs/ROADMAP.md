@@ -71,8 +71,9 @@ case rather than as a single batch.
         `~/Library/Application Support/Bokashi/custom-terms.json`)
   - [x] Bulk-register custom terms from a screen selection (region
         select → Vision OCR → reviewable list of detected lines)
-- Click-to-pick capture window via cursor highlight (à la macOS
-  `⇧⌘4` → Space), as an alternative to the current menu-driven picker
+- [x] Click-to-pick capture window with hover preview (#20) — Mission
+  Control-style overlay; pre-captured snapshots are drawn inside the
+  highlight cutout so occluded windows still show their real content
 - [x] Multi-display support
   - [x] Region overlay spans every connected display; capture routes
         to the right display (#18)
