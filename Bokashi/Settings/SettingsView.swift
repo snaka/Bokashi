@@ -9,7 +9,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label("Custom Terms", systemImage: "eye.slash")
                 }
+            DetectorsSettingsView()
+                .tabItem {
+                    Label("Detectors", systemImage: "sparkles.rectangle.stack")
+                }
         }
-        .frame(width: 520, height: 400)
+        .frame(width: 520, height: 420)
     }
 }
