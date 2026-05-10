@@ -6,6 +6,7 @@ import ScreenCaptureKit
 final class CaptureCoordinator {
     private let captureService = CaptureService()
     private let regionSelector = RegionSelector()
+    private let windowPicker = WindowPicker()
     private let editorPresenter: EditorPresenter
     private let customTermsExtractionPresenter: CustomTermsExtractionPresenter
 
@@ -22,15 +23,11 @@ final class CaptureCoordinator {
         await present { try await self.captureService.captureCursorDisplay() }
     }
 
-    func captureWindow(byID windowID: CGWindowID) async {
+    func pickAndCaptureWindow() async {
         guard ensurePermission() else { return }
-        await present {
-            let content = try await SCShareableContent.current
-            guard let window = content.windows.first(where: { $0.windowID == windowID }) else {
-                throw CaptureCoordinatorError.windowNoLongerAvailable
-            }
-            return try await self.captureService.captureWindow(window)
-        }
+        guard let window = await windowPicker.pickWindow() else { return }
+        try? await Task.sleep(for: .milliseconds(100))
+        await present { try await self.captureService.captureWindow(window) }
     }
 
     func captureRegion() async {
@@ -102,16 +99,5 @@ final class CaptureCoordinator {
         alert.informativeText = (error as? LocalizedError)?.errorDescription
             ?? error.localizedDescription
         alert.runModal()
-    }
-}
-
-enum CaptureCoordinatorError: Error, LocalizedError {
-    case windowNoLongerAvailable
-
-    var errorDescription: String? {
-        switch self {
-        case .windowNoLongerAvailable:
-            return "The selected window is no longer available."
-        }
     }
 }

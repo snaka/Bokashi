@@ -9,14 +9,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         editorPresenter: editorPresenter,
         customTermsExtractionPresenter: customTermsExtractionPresenter
     )
-    let windowsModel = WindowsModel()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NotificationManager.shared.setUp()
         registerHotkeys()
-        Task { @MainActor in
-            await windowsModel.refresh()
-        }
     }
 
     private func registerHotkeys() {
