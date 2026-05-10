@@ -19,7 +19,7 @@ final class CaptureCoordinator {
 
     func captureFullScreen() async {
         guard ensurePermission() else { return }
-        await present { try await self.captureService.captureMainDisplay() }
+        await present { try await self.captureService.captureCursorDisplay() }
     }
 
     func captureWindow(byID windowID: CGWindowID) async {
