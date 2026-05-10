@@ -19,27 +19,20 @@ final class CaptureService {
         }
     }
 
-    func captureMainDisplay() async throws -> CGImage {
-        let content = try await sharedContent()
-        guard let display = content.displays.first else {
+    func captureCursorDisplay() async throws -> CGImage {
+        guard let screen = Self.screen(containing: NSEvent.mouseLocation) else {
             throw CaptureError.noDisplay
         }
+        let display = try await resolveDisplay(matching: screen)
         return try await capture(display: display)
     }
 
     func captureRegion(in screenRect: CGRect) async throws -> CGImage {
         let mid = CGPoint(x: screenRect.midX, y: screenRect.midY)
-        let screen = NSScreen.screens.first(where: { $0.frame.contains(mid) })
-            ?? NSScreen.main
-        guard let screen, let displayID = screen.cgDirectDisplayID else {
+        guard let screen = Self.screen(containing: mid) else {
             throw CaptureError.noDisplay
         }
-
-        let content = try await sharedContent()
-        guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
-            throw CaptureError.noDisplay
-        }
-
+        let display = try await resolveDisplay(matching: screen)
         let fullImage = try await capture(display: display)
 
         let pixelRect = ScreenRectConverter.pixelRectInDisplay(
@@ -75,12 +68,24 @@ final class CaptureService {
 
     // MARK: - Helpers
 
-    private func sharedContent() async throws -> SCShareableContent {
+    private static func screen(containing point: CGPoint) -> NSScreen? {
+        NSScreen.screens.first(where: { $0.frame.contains(point) }) ?? NSScreen.main
+    }
+
+    private func resolveDisplay(matching screen: NSScreen) async throws -> SCDisplay {
+        guard let displayID = screen.cgDirectDisplayID else {
+            throw CaptureError.noDisplay
+        }
+        let content: SCShareableContent
         do {
-            return try await SCShareableContent.current
+            content = try await SCShareableContent.current
         } catch {
             throw CaptureError.underlying(error)
         }
+        guard let display = content.displays.first(where: { $0.displayID == displayID }) else {
+            throw CaptureError.noDisplay
+        }
+        return display
     }
 
     private func capture(display: SCDisplay) async throws -> CGImage {
