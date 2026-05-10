@@ -1,23 +1,28 @@
 import BokashiCore
 import CoreGraphics
 
+@MainActor
 enum AutoMasker {
     static func detect(
-        in observations: [OCRRunner.TextObservation],
-        customTerms: [String] = []
-    ) -> [Annotation] {
+        in image: CGImage,
+        observations: [OCRRunner.TextObservation],
+        customTerms: [String]
+    ) async -> [Annotation] {
+        let detectors: [any SensitiveRegionDetector] = [
+            OCRSensitiveRegionDetector(observations: observations, customTerms: customTerms)
+        ]
+
         var annotations: [Annotation] = []
-        for observation in observations {
-            let matches = SensitiveDetectors.detectAll(
-                in: observation.text,
-                customTerms: customTerms
-            )
-            for match in matches {
-                guard let rect = observation.imageRect(forSubrange: match.nsRange) else { continue }
-                let padded = rect.insetBy(dx: -2, dy: -2)
-                annotations.append(
-                    Annotation(kind: .mosaic(rect: padded), style: .defaultOutline)
-                )
+        for detector in detectors {
+            do {
+                let regions = try await detector.detect(in: image)
+                for region in regions {
+                    annotations.append(
+                        Annotation(kind: .mosaic(rect: region.rect), style: .defaultOutline)
+                    )
+                }
+            } catch {
+                continue
             }
         }
         return annotations

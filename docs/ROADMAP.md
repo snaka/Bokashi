@@ -90,6 +90,15 @@ case rather than as a single batch.
 - Temporarily highlight masked regions in the editor (toggle to
   visualize which areas are masked, for last-mile coverage check
   before export)
+- Pluggable sensitive-region detectors (privacy-first: every detector
+  runs on-device; cloud LLM APIs are explicitly excluded)
+  - [x] `SensitiveRegionDetector` protocol abstraction so OCR /
+        CoreML / local-LLM detectors plug in uniformly (Phase 0)
+  - [ ] Local CoreML detector for chat-app UI patterns (Slack /
+        Twitter / Discord) — bundled or downloadable model packs
+  - [ ] Optional Ollama-based vision LLM detector (user installs
+        Ollama themselves; Bokashi only talks to localhost)
+  - [ ] Per-detector toggle in Settings
 - More auto-detectors: credit cards, IP addresses, AWS keys, My Number
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
