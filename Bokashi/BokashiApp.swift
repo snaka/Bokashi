@@ -36,24 +36,9 @@ struct BokashiApp: App {
                 await appDelegate.captureCoordinator.captureRegion()
             }
         }
-        Menu("Capture Window") {
-            Button("Refresh") {
-                Task { @MainActor in
-                    await appDelegate.windowsModel.refresh()
-                }
-            }
-            Divider()
-            if appDelegate.windowsModel.windows.isEmpty {
-                Text("No windows").disabled(true)
-            } else {
-                ForEach(appDelegate.windowsModel.windows) { item in
-                    Button(item.displayName) {
-                        let id = item.id
-                        Task { @MainActor in
-                            await appDelegate.captureCoordinator.captureWindow(byID: id)
-                        }
-                    }
-                }
+        Button("Capture Window…") {
+            Task { @MainActor in
+                await appDelegate.captureCoordinator.pickAndCaptureWindow()
             }
         }
         Divider()
