@@ -105,5 +105,9 @@ case rather than as a single batch.
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
 - Submit to the official `homebrew/cask` repo (deferred until v1.0)
+- CI maintenance: migrate `release.yml` actions (`actions/checkout`,
+  `actions/upload-artifact`, `softprops/action-gh-release`) off
+  Node.js 20 before 2026-09-16 when Node 20 is removed from runners
+  (deprecation warning surfaced in the v0.5.0 release run)
 - Scrolling capture
 - GIF / video capture (open question — may stay out of scope)
