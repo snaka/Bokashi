@@ -1,5 +1,6 @@
 import AppKit
 import KeyboardShortcuts
+import Sparkle
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -8,6 +9,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     lazy var captureCoordinator = CaptureCoordinator(
         editorPresenter: editorPresenter,
         customTermsExtractionPresenter: customTermsExtractionPresenter
+    )
+    let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
     )
 
     func applicationDidFinishLaunching(_ notification: Notification) {

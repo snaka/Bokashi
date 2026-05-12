@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="yes"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>Bokashi</title>
+    <link>https://snaka.github.io/Bokashi/appcast.xml</link>
+    <description>Bokashi updates feed for Sparkle.</description>
+    <language>en</language>
+    <!-- Items are prepended by .github/scripts/update_appcast.py during release. -->
+  </channel>
+</rss>

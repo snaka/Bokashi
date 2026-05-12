@@ -26,5 +26,11 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright © 2026 snaka. MIT License.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<false/>
+	<key>SUFeedURL</key>
+	<string>https://snaka.github.io/Bokashi/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>l1QQwq5QWJjOR6kG5iP//6vDgKLnAGmjbw2Hwk7dZM4=</string>
 </dict>
 </plist>
