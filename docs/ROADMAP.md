@@ -93,12 +93,14 @@ case rather than as a single batch.
 - Pluggable sensitive-region detectors (privacy-first: every detector
   runs on-device; cloud LLM APIs are explicitly excluded)
   - [x] `SensitiveRegionDetector` protocol abstraction so OCR /
-        CoreML / local-LLM detectors plug in uniformly (Phase 0)
+        CoreML / local-LLM detectors plug in uniformly (Phase 0, #21)
+  - [x] Optional Ollama-based vision LLM detector (user installs
+        Ollama themselves; Bokashi only talks to localhost) (#22)
+  - [x] Per-detector enable toggle in Settings (Detectors tab, #22)
+  - [x] Debug overlay: color-code each auto-detected mosaic by the
+        detector that produced it, for prompt / detector tuning (#22)
   - [ ] Local CoreML detector for chat-app UI patterns (Slack /
         Twitter / Discord) — bundled or downloadable model packs
-  - [ ] Optional Ollama-based vision LLM detector (user installs
-        Ollama themselves; Bokashi only talks to localhost)
-  - [ ] Per-detector toggle in Settings
 - More auto-detectors: credit cards, IP addresses, AWS keys, My Number
 - Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
