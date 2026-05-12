@@ -17,7 +17,7 @@ ITEM_TEMPLATE = """    <item>
       <title>{title}</title>
       <link>{link}</link>
       <pubDate>{pub_date}</pubDate>
-      <sparkle:version>{version}</sparkle:version>
+      <sparkle:version>{build_version}</sparkle:version>
       <sparkle:shortVersionString>{version}</sparkle:shortVersionString>
       <sparkle:minimumSystemVersion>{min_macos}</sparkle:minimumSystemVersion>
       <enclosure
@@ -35,6 +35,7 @@ def render_item(args: argparse.Namespace) -> str:
         link=args.release_notes_url,
         pub_date=pub_date,
         version=args.version,
+        build_version=args.build_version,
         min_macos=args.min_macos,
         url=args.url,
         size=args.size,
@@ -58,7 +59,17 @@ def prepend_item(appcast_path: Path, item_xml: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", required=True, help="e.g. 0.6.0")
+    parser.add_argument("--version", required=True, help="Marketing version, e.g. 0.6.0")
+    parser.add_argument(
+        "--build-version",
+        required=True,
+        help=(
+            "CFBundleVersion of the build this entry points to. Sparkle uses "
+            "this for version comparison and it MUST match the installed "
+            "app's CFBundleVersion type. We use the GitHub Actions run "
+            "number, a monotonically increasing integer."
+        ),
+    )
     parser.add_argument("--url", required=True, help="DMG download URL")
     parser.add_argument("--signature", required=True, help="sparkle:edSignature value")
     parser.add_argument("--size", required=True, type=int, help="DMG byte size")

@@ -266,6 +266,7 @@ jobs:
           git checkout -B main origin/main
           python3 .github/scripts/update_appcast.py \
             --version "$VERSION" \
+            --build-version "$GITHUB_RUN_NUMBER" \
             --url "https://github.com/snaka/Bokashi/releases/download/v${VERSION}/Bokashi-${VERSION}.dmg" \
             --signature "$SIGNATURE" \
             --size "$SIZE" \
