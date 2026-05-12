@@ -6,5 +6,18 @@
     <description>Bokashi updates feed for Sparkle.</description>
     <language>en</language>
     <!-- Items are prepended by .github/scripts/update_appcast.py during release. -->
+      <item>
+      <title>v0.6.0</title>
+      <link>https://github.com/snaka/Bokashi/releases/tag/v0.6.0</link>
+      <pubDate>Tue, 12 May 2026 14:27:47 +0000</pubDate>
+      <sparkle:version>0.6.0</sparkle:version>
+      <sparkle:shortVersionString>0.6.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/snaka/Bokashi/releases/download/v0.6.0/Bokashi-0.6.0.dmg"
+        length="1585105"
+        type="application/octet-stream"
+        sparkle:edSignature="XWEQie5eskCjgScJZfMZbT2M4NNmBk0PC3edW3a9eIkyUFuINCMM7ZnMVD1BeU+EC/flivy+3/T2RIe5T6bLBQ=="/>
+    </item>
   </channel>
 </rss>
