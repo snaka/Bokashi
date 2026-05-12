@@ -16,23 +16,29 @@ public struct AnnotationStyle: Hashable, Codable, Sendable {
     public static let defaultFilled = AnnotationStyle(color: .bokashiRed, lineWidth: 6, filled: true)
 
     public enum WidthPreset: CaseIterable, Hashable, Sendable {
+        case hairline
         case thin
         case medium
         case thick
+        case heavy
 
         public var lineWidth: CGFloat {
             switch self {
-            case .thin: return 2
+            case .hairline: return 1
+            case .thin: return 3
             case .medium: return 6
-            case .thick: return 14
+            case .thick: return 10
+            case .heavy: return 16
             }
         }
 
         public var label: String {
             switch self {
+            case .hairline: return "Hairline"
             case .thin: return "Thin"
             case .medium: return "Medium"
             case .thick: return "Thick"
+            case .heavy: return "Heavy"
             }
         }
     }

@@ -38,4 +38,12 @@ final class AnnotationTests: XCTestCase {
         XCTAssertFalse(AnnotationStyle.defaultOutline.filled)
         XCTAssertTrue(AnnotationStyle.defaultFilled.filled)
     }
+
+    func testWidthPresetsAreOrderedThinToThick() {
+        let widths = AnnotationStyle.WidthPreset.allCases.map { $0.lineWidth }
+        XCTAssertEqual(widths.count, 5)
+        XCTAssertEqual(widths, widths.sorted())
+        // The medium preset is the historical default (defaultOutline uses 6).
+        XCTAssertEqual(AnnotationStyle.WidthPreset.medium.lineWidth, 6)
+    }
 }
