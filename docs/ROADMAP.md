@@ -79,6 +79,11 @@ case rather than as a single batch.
         to the right display (#18)
   - [x] Full-screen capture targets the display the cursor is on (#19)
 - Sparkle 2 auto-update
+  - [x] Plumbing: SPM dep, signed appcast on `gh-pages`-via-main-/docs,
+        release.yml signs each DMG and pushes a new appcast entry,
+        `Check for Updates…` in the menubar (#25)
+  - [ ] Settings toggle for automatic background checks (currently
+        manual-only; `SUEnableAutomaticChecks` defaults to false)
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
 - Expand annotation line-width presets from 3 to ~5 levels (currently
