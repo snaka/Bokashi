@@ -36,6 +36,51 @@ somewhere temporarily.
 | `AC_PASSWORD` | The app-specific password from step 1 |
 | `AC_TEAM_ID` | Your 10-char Team ID |
 | `TAP_PUSH_TOKEN` | The fine-grained PAT from step 2 |
+| `SPARKLE_ED_PRIVATE_KEY` | Sparkle EdDSA private key (see "Sparkle auto-update one-time setup" below) |
+
+### 4. Sparkle auto-update one-time setup
+
+Required once before the first release that ships Sparkle (v0.6.0+).
+If `SPARKLE_ED_PRIVATE_KEY` is missing, releases still build and ship,
+but no appcast entry is written and auto-update clients won't see the
+new version.
+
+1. **Locate Sparkle's CLI tools**. They ship with the Sparkle SPM
+   package and are unpacked into Xcode's DerivedData the first time
+   Bokashi is built. Find them with:
+   ```bash
+   SPARKLE_BIN=$(find ~/Library/Developer/Xcode/DerivedData \
+     -path '*/artifacts/sparkle/Sparkle/bin' -type d 2>/dev/null | head -1)
+   echo "$SPARKLE_BIN"
+   ```
+   If empty, run a Debug build of Bokashi once (`xcodebuild build`),
+   then re-run the find.
+2. **Generate the EdDSA key pair**:
+   ```bash
+   "$SPARKLE_BIN/generate_keys"
+   ```
+   This stores the **private key in your login keychain** under
+   "https://sparkle-project.org" and prints the **public key** to
+   stdout (a base64 string like `MCowB...`).
+3. **Put the public key in `project.yml`**: replace the empty
+   `SUPublicEDKey: ""` with the printed value, then `xcodegen` and
+   commit. (Yes, the public key lives in the repo — that is the whole
+   point of asymmetric signing.)
+4. **Export the private key**:
+   ```bash
+   "$SPARKLE_BIN/generate_keys" -x sparkle_priv.key
+   ```
+   Add the contents of `sparkle_priv.key` as the
+   `SPARKLE_ED_PRIVATE_KEY` repository secret, then **delete the
+   file** locally. Losing the key is annoying but recoverable: you
+   can rotate by generating a new pair and re-publishing the public
+   key in a new app version. Without the private key, you can never
+   ship updates that existing installs will accept.
+5. **Enable GitHub Pages on the repo**:
+   `Settings → Pages → Source: Deploy from a branch → Branch: main →
+   Folder: /docs → Save`. After the first release pushes a real entry
+   into `docs/appcast.xml`, the feed will be available at
+   <https://snaka.github.io/Bokashi/appcast.xml>.
 
 ## Cutting a release
 

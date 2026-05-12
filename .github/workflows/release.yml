@@ -220,6 +220,66 @@ jobs:
             git push
           fi
 
+      - name: Sign DMG for Sparkle
+        if: github.event_name == 'push'
+        id: sparkle_sign
+        env:
+          SPARKLE_ED_PRIVATE_KEY: ${{ secrets.SPARKLE_ED_PRIVATE_KEY }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -e
+          if [ -z "$SPARKLE_ED_PRIVATE_KEY" ]; then
+            echo "::warning::SPARKLE_ED_PRIVATE_KEY secret is not set — skipping appcast update. Auto-update users will not see this release until the secret is configured."
+            echo "skipped=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          KEY_FILE="$RUNNER_TEMP/sparkle_priv.key"
+          printf '%s' "$SPARKLE_ED_PRIVATE_KEY" > "$KEY_FILE"
+          chmod 600 "$KEY_FILE"
+          DMG="$RUNNER_TEMP/Bokashi-${VERSION}.dmg"
+          SIGN_UPDATE=$(find ~/Library/Developer/Xcode/DerivedData -name sign_update -type f 2>/dev/null | head -1)
+          if [ -z "$SIGN_UPDATE" ]; then
+            echo "::error::sign_update not found in DerivedData. Did SPM resolve Sparkle?"
+            exit 1
+          fi
+          OUTPUT=$("$SIGN_UPDATE" -f "$KEY_FILE" "$DMG")
+          rm -f "$KEY_FILE"
+          SIG=$(printf '%s' "$OUTPUT" | sed -nE 's/.*sparkle:edSignature="([^"]+)".*/\1/p')
+          if [ -z "$SIG" ]; then
+            echo "::error::sign_update produced no signature. Raw output: $OUTPUT"
+            exit 1
+          fi
+          SIZE=$(stat -f%z "$DMG")
+          echo "signature=$SIG" >> "$GITHUB_OUTPUT"
+          echo "size=$SIZE" >> "$GITHUB_OUTPUT"
+          echo "skipped=false" >> "$GITHUB_OUTPUT"
+
+      - name: Update appcast.xml on main
+        if: github.event_name == 'push' && steps.sparkle_sign.outputs.skipped != 'true'
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+          SIGNATURE: ${{ steps.sparkle_sign.outputs.signature }}
+          SIZE: ${{ steps.sparkle_sign.outputs.size }}
+        run: |
+          set -e
+          git fetch origin main
+          git checkout -B main origin/main
+          python3 .github/scripts/update_appcast.py \
+            --version "$VERSION" \
+            --url "https://github.com/snaka/Bokashi/releases/download/v${VERSION}/Bokashi-${VERSION}.dmg" \
+            --signature "$SIGNATURE" \
+            --size "$SIZE" \
+            --release-notes-url "https://github.com/snaka/Bokashi/releases/tag/v${VERSION}"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add docs/appcast.xml
+          if git diff --cached --quiet; then
+            echo "No appcast changes to commit"
+          else
+            git commit -m "chore: appcast entry for v${VERSION}"
+            git push origin main
+          fi
+
       - name: Clean up keychain
         if: always()
         run: |

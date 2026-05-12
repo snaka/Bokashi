@@ -47,6 +47,9 @@ struct BokashiApp: App {
             Text("Settings…")
         }
         .keyboardShortcut(",")
+        Button("Check for Updates…") {
+            appDelegate.updaterController.checkForUpdates(nil)
+        }
         Divider()
         Button("Quit Bokashi") {
             NSApplication.shared.terminate(nil)
