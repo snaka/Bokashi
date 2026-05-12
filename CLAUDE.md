@@ -110,3 +110,37 @@ empty directories ahead of need.
 Milestones M0 (current — repo scaffolding) through M5 (auto-detect) are
 listed in [`docs/ROADMAP.md`](docs/ROADMAP.md). Keep that file in sync when
 milestones complete or scope changes.
+
+## Cutting a release
+
+Full procedure lives in [`RELEASE.md`](RELEASE.md); this is the short
+playbook for when "publish a new version" comes up:
+
+1. **Pick the next version.** Semver: feature-set bump = minor, bug fix
+   = patch. Default to a minor bump (e.g. `0.4.0` → `0.5.0`) when one
+   or more features have landed since the last tag.
+2. **Confirm the tag is free.** `git ls-remote --tags origin` plus
+   `gh release list`. If the chosen tag already exists on the remote,
+   **do not force-push or delete it** — bump to the next minor instead
+   and add a short note in `CHANGELOG.md` explaining the skip. (This
+   exact case happened with v0.4.0; the fix was to ship as v0.5.0.)
+3. **Prep PR.** Branch `chore/prep-vX.Y.Z`. Bump `MARKETING_VERSION`
+   in `project.yml` and add a new `[X.Y.Z] - YYYY-MM-DD` section to
+   `CHANGELOG.md` with the changes since the previous tag, grouped
+   into Added / Changed / Fixed / Privacy / Notes. Close it out with a
+   reference link at the bottom. Run `xcodegen` so the `.xcodeproj`
+   stays in sync locally (the file itself is gitignored, but the run
+   shakes out any project.yml typos).
+4. **Merge the prep PR.** The user merges; the assistant does not
+   `gh pr merge` shared-state PRs without an explicit request.
+5. **Tag and push.** From `main`:
+   ```sh
+   git checkout main && git pull
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   ```
+   The `release.yml` workflow signs, notarizes, attaches a `.dmg` to a
+   new GitHub Release, and updates the Homebrew cask formula in
+   `snaka/homebrew-tap`. No further action.
+6. **Watch the workflow.** `gh run watch` (or the Actions tab). On
+   failure, see the Troubleshooting section in `RELEASE.md`.
