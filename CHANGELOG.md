@@ -5,6 +5,63 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-05-12
+
+### Added
+
+- **User-defined custom mask terms.** New *Custom Terms* tab in
+  Settings (⌘,) where you register literal strings — your own name,
+  company, product code, etc. They are masked automatically when
+  found in a captured screenshot. Matching is case-insensitive and
+  matches the substring exactly as entered, so registering `Hoge`
+  masks just the `Hoge` portion of `HogeFuga`. Persisted as JSON at
+  `~/Library/Application Support/Bokashi/custom-terms.json`. (#17)
+- **Bulk-register custom terms from a screen selection.** Drag-select
+  a region on screen and Vision OCR extracts every visible line; pick
+  which ones become custom terms via a checkbox list with inline
+  edit. (#17)
+- **Multi-display support.**
+  - Region selection now covers every connected display; the overlay
+    spans every screen and capture routes to the correct one. (#18)
+  - Full-screen capture targets the display the cursor is currently
+    on instead of always grabbing the main display. (#19)
+- **Click-to-pick capture window with hover preview.** Mission
+  Control-style overlay replaces the menu-driven window list:
+  hover any window to see a blue outline and the window's *actual
+  contents* drawn inside the cutout. Buried / occluded windows still
+  show their real content (snapshots are pre-captured upfront via
+  `SCContentFilter(desktopIndependentWindow:)`). Click to capture,
+  Esc to cancel. (#20)
+- **Optional Ollama vision-LLM detector.** New *Detectors* tab in
+  Settings can route the captured image through an Ollama instance
+  running on your machine for vision-LLM-based PII detection.
+  Configure endpoint (default `http://localhost:11434`) and model
+  name (e.g. `llama3.2-vision`, `qwen2-vl`, `MiniCPM-V`); the *Test
+  Connection* button verifies the endpoint is reachable and the
+  model is pulled. Detection failures (unreachable / model missing /
+  malformed response) are silent — the OCR detector still
+  completes. (#22)
+- **Developer-mode mask source overlay.** A *Highlight mask source*
+  toggle in Settings outlines each auto-detected mosaic with a
+  colored dashed border in the editor — blue for OCR-based detection
+  and orange for Ollama. Useful baseline for tuning prompts and
+  comparing detectors. (#22)
+
+### Changed
+
+- The OCR / regex / NLTagger detection path is now one implementation
+  of a new `SensitiveRegionDetector` protocol. Future detectors
+  (local CoreML model packs, etc.) slot into the same pipeline. No
+  user-visible behavior change. (#21)
+
+### Privacy
+
+- All detectors run **on-device**. The Ollama detector talks only to
+  the endpoint you configure (default localhost); no cloud-LLM
+  integrations exist and none are planned.
+
+[0.4.0]: https://github.com/snaka/Bokashi/releases/tag/v0.4.0
+
 ## [0.3.0] - 2026-05-04
 
 ### Added
