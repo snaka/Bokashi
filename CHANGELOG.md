@@ -5,6 +5,35 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-05-12
+
+This release ships **Sparkle 2 auto-update infrastructure** and nothing
+else user-facing. Existing v0.5.0 installs predate Sparkle and cannot
+self-update — run `brew upgrade --cask snaka/tap/bokashi` (or download
+the v0.6.0 DMG manually) one last time. From v0.6.0 onwards,
+"Check for Updates…" in the menubar talks to the signed appcast at
+<https://snaka.github.io/Bokashi/appcast.xml>.
+
+### Added
+
+- **Sparkle 2 auto-update plumbing.** New `Check for Updates…` entry
+  in the menubar invokes Sparkle, which fetches a signed appcast,
+  verifies the new DMG's EdDSA signature, and offers to install. (#25)
+  - Automatic background checks are intentionally **off** in this
+    release (`SUEnableAutomaticChecks = false`); a Settings toggle to
+    flip them on is on the roadmap.
+  - The release pipeline now signs every DMG with Sparkle's
+    `sign_update` and appends an entry to `docs/appcast.xml` so the
+    public feed always lists the latest version.
+
+### Privacy
+
+- The Sparkle feed is hosted on GitHub Pages from this repo. The only
+  network call on update check is GET against that public XML; no
+  user identifier is sent.
+
+[0.6.0]: https://github.com/snaka/Bokashi/releases/tag/v0.6.0
+
 ## [0.5.0] - 2026-05-12
 
 Skips v0.4.0 — that tag was already published earlier and is left
