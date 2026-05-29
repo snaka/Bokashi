@@ -1,9 +1,14 @@
 import SwiftUI
-import BokashiCore
 
 @main
 struct BokashiApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    /// `CFBundleShortVersionString` from the app bundle (driven by
+    /// `MARKETING_VERSION` in `project.yml`). Falls back to "?" only if
+    /// the Info.plist key is somehow missing.
+    private static let marketingVersion: String =
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
 
     var body: some Scene {
         MenuBarExtra("Bokashi", image: "MenuBarIcon") {
@@ -27,7 +32,7 @@ struct BokashiApp: App {
     private var menuContent: some View {
         @Bindable var prefs = Preferences.shared
 
-        Text("Bokashi v\(BokashiCore.version)")
+        Text("Bokashi v\(Self.marketingVersion)")
         Divider()
         Button("Capture Full Screen") {
             Task { @MainActor in
