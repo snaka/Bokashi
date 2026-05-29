@@ -60,34 +60,28 @@ sequences, IP addresses, AWS-key-like strings, Japanese My Number.
 quality than regex would, so further detectors get evaluated case by
 case rather than as a single batch.
 
-## Beyond M5
+## Backlog
 
-- [x] Developer ID signing + notarization in CI
-- [x] Homebrew Cask distribution via [`snaka/homebrew-tap`](https://github.com/snaka/homebrew-tap)
-      (`brew install --cask snaka/tap/bokashi`)
-- Settings UI (save destination, hotkey rebinding via `KeyboardShortcuts`)
-  - [x] Settings scene scaffolding + custom-term list (user-defined
-        substrings auto-masked on capture, persisted as JSON in
-        `~/Library/Application Support/Bokashi/custom-terms.json`)
-  - [x] Bulk-register custom terms from a screen selection (region
-        select → Vision OCR → reviewable list of detected lines)
-- [x] Click-to-pick capture window with hover preview (#20) — Mission
-  Control-style overlay; pre-captured snapshots are drawn inside the
-  highlight cutout so occluded windows still show their real content
-- [x] Multi-display support
-  - [x] Region overlay spans every connected display; capture routes
-        to the right display (#18)
-  - [x] Full-screen capture targets the display the cursor is on (#19)
-- Sparkle 2 auto-update
-  - [x] Plumbing: SPM dep, signed appcast on `gh-pages`-via-main-/docs,
-        release.yml signs each DMG and pushes a new appcast entry,
-        `Check for Updates…` in the menubar (#25)
-  - [ ] Settings toggle for automatic background checks (currently
-        manual-only; `SUEnableAutomaticChecks` defaults to false)
+Unscheduled work, grouped by theme. Items move out of here when they get
+folded into a release prep PR.
+
+### Polish / UX
+
+- Editor window minimum size clamped so the toolbar always fits
+  (recovering a hidden toolbar is fiddly; set `contentMinSize` on the
+  window so it cannot be made smaller than the toolbar in the first
+  place)
+- Copy to clipboard immediately on capture, before the editor opens; the
+  existing Done-on-export copy still runs afterward and overwrites with
+  the annotated image (so "paste right away" and "edit, then paste"
+  both work without extra clicks)
+- Per-mode capture hotkey for window selection (currently full-screen is
+  `⌃⌥⇧4` and region is `⌃⌥⇧6`; window picker is menu-driven — add a
+  third hotkey, e.g. `⌃⌥⇧5`)
+- Hotkey rebinding UI via `KeyboardShortcuts`
+- Configurable save destination in Settings
 - Designed (rather than placeholder) app + menubar icons
 - Mosaic block-size presets (small / medium / large)
-- Expand annotation line-width presets from 3 to ~5 levels (currently
-  thin / medium / thick in `AnnotationStyle.WidthPreset`)
 - Text annotation tool (typed labels / captions on top of the image,
   with font-size and color controls)
 - Eraser for placed masks (click a mosaic annotation to remove it,
@@ -95,24 +89,32 @@ case rather than as a single batch.
 - Temporarily highlight masked regions in the editor (toggle to
   visualize which areas are masked, for last-mile coverage check
   before export)
-- Pluggable sensitive-region detectors (privacy-first: every detector
-  runs on-device; cloud LLM APIs are explicitly excluded)
-  - [x] `SensitiveRegionDetector` protocol abstraction so OCR /
-        CoreML / local-LLM detectors plug in uniformly (Phase 0, #21)
-  - [x] Optional Ollama-based vision LLM detector (user installs
-        Ollama themselves; Bokashi only talks to localhost) (#22)
-  - [x] Per-detector enable toggle in Settings (Detectors tab, #22)
-  - [x] Debug overlay: color-code each auto-detected mosaic by the
-        detector that produced it, for prompt / detector tuning (#22)
-  - [ ] Local CoreML detector for chat-app UI patterns (Slack /
-        Twitter / Discord) — bundled or downloadable model packs
-- More auto-detectors: credit cards, IP addresses, AWS keys, My Number
-- Reviewable detection candidates (preview boxes before applying)
 - "N items masked" toast after auto-detect
+
+### Update mechanism
+
+- Sparkle: Settings toggle for automatic background checks (currently
+  manual-only; `SUEnableAutomaticChecks` defaults to false)
+
+### Detection
+
+Privacy-first: every detector runs on-device; cloud LLM APIs are
+explicitly excluded.
+
+- Reviewable detection candidates (preview boxes before applying)
+- Local CoreML detector for chat-app UI patterns (Slack / Twitter /
+  Discord) — bundled or downloadable model packs
+- More auto-detectors: credit cards, IP addresses, AWS keys, My Number
+
+### Distribution / CI
+
 - Submit to the official `homebrew/cask` repo (deferred until v1.0)
 - CI maintenance: migrate `release.yml` actions (`actions/checkout`,
   `actions/upload-artifact`, `softprops/action-gh-release`) off
   Node.js 20 before 2026-09-16 when Node 20 is removed from runners
   (deprecation warning surfaced in the v0.5.0 release run)
+
+### Open questions
+
 - Scrolling capture
-- GIF / video capture (open question — may stay out of scope)
+- GIF / video capture (may stay out of scope)
