@@ -68,6 +68,10 @@ final class CaptureCoordinator {
     private func present(_ produce: () async throws -> CGImage) async {
         do {
             let image = try await produce()
+            // Make the raw capture immediately pasteable; the editor's
+            // copy-on-close path overwrites this with the annotated image
+            // if the user edits and confirms.
+            Clipboard.copy(image)
             editorPresenter.present(image: image)
         } catch {
             presentError(error)

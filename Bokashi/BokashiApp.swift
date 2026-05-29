@@ -1,9 +1,15 @@
+import KeyboardShortcuts
 import SwiftUI
-import BokashiCore
 
 @main
 struct BokashiApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    /// `CFBundleShortVersionString` from the app bundle (driven by
+    /// `MARKETING_VERSION` in `project.yml`). Falls back to "?" only if
+    /// the Info.plist key is somehow missing.
+    private static let marketingVersion: String =
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
 
     var body: some Scene {
         MenuBarExtra("Bokashi", image: "MenuBarIcon") {
@@ -12,11 +18,14 @@ struct BokashiApp: App {
         .menuBarExtraStyle(.menu)
 
         Settings {
-            SettingsView(onAddFromSelection: {
-                Task { @MainActor in
-                    await appDelegate.captureCoordinator.captureRegionForCustomTerms()
-                }
-            })
+            SettingsView(
+                onAddFromSelection: {
+                    Task { @MainActor in
+                        await appDelegate.captureCoordinator.captureRegionForCustomTerms()
+                    }
+                },
+                updaterSettings: appDelegate.updaterSettings
+            )
         }
     }
 
@@ -24,22 +33,16 @@ struct BokashiApp: App {
     private var menuContent: some View {
         @Bindable var prefs = Preferences.shared
 
-        Text("Bokashi v\(BokashiCore.version)")
+        Text("Bokashi v\(Self.marketingVersion)")
         Divider()
-        Button("Capture Full Screen") {
-            Task { @MainActor in
-                await appDelegate.captureCoordinator.captureFullScreen()
-            }
+        captureButton("Capture Full Screen", shortcut: .captureFullScreen) {
+            await appDelegate.captureCoordinator.captureFullScreen()
         }
-        Button("Capture Region…") {
-            Task { @MainActor in
-                await appDelegate.captureCoordinator.captureRegion()
-            }
+        captureButton("Capture Region…", shortcut: .captureRegion) {
+            await appDelegate.captureCoordinator.captureRegion()
         }
-        Button("Capture Window…") {
-            Task { @MainActor in
-                await appDelegate.captureCoordinator.pickAndCaptureWindow()
-            }
+        captureButton("Capture Window…", shortcut: .captureWindow) {
+            await appDelegate.captureCoordinator.pickAndCaptureWindow()
         }
         Divider()
         Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
@@ -55,5 +58,24 @@ struct BokashiApp: App {
             NSApplication.shared.terminate(nil)
         }
         .keyboardShortcut("q")
+    }
+
+    @ViewBuilder
+    private func captureButton(
+        _ title: String,
+        shortcut name: KeyboardShortcuts.Name,
+        action: @escaping () async -> Void
+    ) -> some View {
+        let shortcut = KeyboardShortcuts.getShortcut(for: name)
+        if let key = shortcut?.swiftUIKeyEquivalent {
+            Button(title) {
+                Task { @MainActor in await action() }
+            }
+            .keyboardShortcut(key, modifiers: shortcut?.swiftUIModifiers ?? [])
+        } else {
+            Button(title) {
+                Task { @MainActor in await action() }
+            }
+        }
     }
 }

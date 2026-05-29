@@ -25,6 +25,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
         window.delegate = self
+        weak var weakWindow = window
         let host = NSHostingController(
             rootView: EditorView(
                 image: image,
@@ -32,7 +33,22 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
                 state: state,
                 onDone: { [weak self] in self?.done() },
                 onSave: { [weak self] in self?.save() },
-                onDiscard: { [weak self] in self?.discard() }
+                onDiscard: { [weak self] in self?.discard() },
+                onToolbarMinWidthChange: { width in
+                    guard let window = weakWindow, width > 0 else { return }
+                    let newMin = NSSize(
+                        width: ceil(width),
+                        height: window.contentMinSize.height
+                    )
+                    window.contentMinSize = newMin
+                    let contentRect = window.contentRect(forFrameRect: window.frame)
+                    if contentRect.width < newMin.width {
+                        window.setContentSize(NSSize(
+                            width: newMin.width,
+                            height: contentRect.height
+                        ))
+                    }
+                }
             )
         )
         host.sizingOptions = []
@@ -43,7 +59,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         Task { @MainActor [state, image, autoMaskOnCapture] in
             await state.runOCR(on: image)
             if autoMaskOnCapture {
-                await state.detectSensitiveInfo(in: image)
+                // Silent on empty: when auto-mask runs as part of capture
+                // there's no user gesture to confirm; a "nothing detected"
+                // toast would just be noise.
+                await state.detectSensitiveInfo(in: image, silentIfEmpty: true)
             }
         }
     }
@@ -75,7 +94,10 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
             defer: false
         )
         window.title = makeTitle()
-        window.minSize = CGSize(width: 420, height: 320)
+        // Width floor is overridden once the SwiftUI toolbar reports its
+        // natural width via `onToolbarMinWidthChange`; this initial value
+        // is a fallback used until the first layout pass lands.
+        window.contentMinSize = CGSize(width: 420, height: 320)
         window.isReleasedWhenClosed = false
         return (window, contentSize)
     }

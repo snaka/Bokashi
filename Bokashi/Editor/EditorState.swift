@@ -13,6 +13,7 @@ final class EditorState {
     var draft: Annotation?
     var isDetecting: Bool = false
     var isOCRReady: Bool = false
+    var toastMessage: String?
 
     @ObservationIgnored
     var undoManager: UndoManager?
@@ -22,6 +23,9 @@ final class EditorState {
 
     @ObservationIgnored
     private var ocrTask: Task<Void, Never>?
+
+    @ObservationIgnored
+    private var toastTask: Task<Void, Never>?
 
     /// Auto-mask annotations carry the detector that produced them so the
     /// editor can color-code them in debug mode. Manual masks have no
@@ -51,7 +55,7 @@ final class EditorState {
         await task.value
     }
 
-    func detectSensitiveInfo(in image: CGImage) async {
+    func detectSensitiveInfo(in image: CGImage, silentIfEmpty: Bool = false) async {
         guard !isDetecting else { return }
         isDetecting = true
         defer { isDetecting = false }
@@ -63,7 +67,12 @@ final class EditorState {
             observations: ocrObservations,
             customTerms: CustomTermsManager.shared.terms
         )
-        guard !detections.isEmpty else { return }
+        if detections.isEmpty {
+            if !silentIfEmpty {
+                showToast("No sensitive info detected")
+            }
+            return
+        }
 
         undoManager?.beginUndoGrouping()
         for detection in detections {
@@ -72,6 +81,19 @@ final class EditorState {
         }
         undoManager?.setActionName("Auto-Mask Sensitive Info")
         undoManager?.endUndoGrouping()
+
+        let count = detections.count
+        showToast("Masked \(count) item\(count == 1 ? "" : "s")")
+    }
+
+    private func showToast(_ message: String) {
+        toastTask?.cancel()
+        toastMessage = message
+        toastTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled else { return }
+            self?.toastMessage = nil
+        }
     }
 
     var currentStyle: AnnotationStyle {
