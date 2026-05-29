@@ -15,6 +15,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         updaterDelegate: nil,
         userDriverDelegate: nil
     )
+    lazy var updaterSettings = UpdaterSettings(updater: updaterController.updater)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NotificationManager.shared.setUp()
@@ -30,6 +31,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         KeyboardShortcuts.onKeyDown(for: .captureRegion) { [weak self] in
             Task { @MainActor in
                 await self?.captureCoordinator.captureRegion()
+            }
+        }
+        KeyboardShortcuts.onKeyDown(for: .captureWindow) { [weak self] in
+            Task { @MainActor in
+                await self?.captureCoordinator.pickAndCaptureWindow()
             }
         }
     }

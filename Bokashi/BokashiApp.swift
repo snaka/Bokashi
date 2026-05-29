@@ -12,11 +12,14 @@ struct BokashiApp: App {
         .menuBarExtraStyle(.menu)
 
         Settings {
-            SettingsView(onAddFromSelection: {
-                Task { @MainActor in
-                    await appDelegate.captureCoordinator.captureRegionForCustomTerms()
-                }
-            })
+            SettingsView(
+                onAddFromSelection: {
+                    Task { @MainActor in
+                        await appDelegate.captureCoordinator.captureRegionForCustomTerms()
+                    }
+                },
+                updaterSettings: appDelegate.updaterSettings
+            )
         }
     }
 

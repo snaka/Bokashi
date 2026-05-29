@@ -8,14 +8,31 @@ struct EditorView: View {
     let onDone: () -> Void
     let onSave: () -> Void
     let onDiscard: () -> Void
+    var onToolbarMinWidthChange: ((CGFloat) -> Void)?
 
     @Environment(\.undoManager) private var undoManager
 
     var body: some View {
         VStack(spacing: 0) {
             toolbar
+                .background(measuringToolbar)
+                .onPreferenceChange(ToolbarMinWidthKey.self) { width in
+                    onToolbarMinWidthChange?(width)
+                }
             Divider()
             AnnotationCanvas(image: image, mosaicImage: mosaicImage, state: state)
+                .overlay(alignment: .top) {
+                    if let message = state.toastMessage {
+                        ToastBanner(text: message)
+                            .padding(.top, 14)
+                            .transition(.asymmetric(
+                                insertion: .opacity.combined(with: .move(edge: .top)),
+                                removal: .opacity
+                            ))
+                            .allowsHitTesting(false)
+                    }
+                }
+                .animation(.easeInOut(duration: 0.2), value: state.toastMessage)
         }
         .background(Color(nsColor: .windowBackgroundColor))
         .background(undoShortcuts)
@@ -26,6 +43,28 @@ struct EditorView: View {
     }
 
     private var toolbar: some View {
+        toolbarContent(includeSpacer: true)
+    }
+
+    // A hidden copy of the toolbar with the flexible Spacer removed, used
+    // only to measure the toolbar's natural minimum width so the window
+    // controller can clamp the window's `contentMinSize`.
+    private var measuringToolbar: some View {
+        toolbarContent(includeSpacer: false)
+            .fixedSize(horizontal: true, vertical: false)
+            .hidden()
+            .background(
+                GeometryReader { proxy in
+                    Color.clear.preference(
+                        key: ToolbarMinWidthKey.self,
+                        value: proxy.size.width
+                    )
+                }
+            )
+    }
+
+    @ViewBuilder
+    private func toolbarContent(includeSpacer: Bool) -> some View {
         HStack(spacing: 10) {
             Button(role: .destructive, action: onDiscard) {
                 Label("Discard", systemImage: "trash")
@@ -50,7 +89,9 @@ struct EditorView: View {
                 ForEach(AnnotationStyle.WidthPreset.allCases, id: \.self) { widthButton($0) }
             }
 
-            Spacer()
+            if includeSpacer {
+                Spacer()
+            }
 
             detectButton
 
@@ -159,5 +200,29 @@ struct EditorView: View {
         .opacity(0)
         .accessibilityHidden(true)
         .frame(width: 0, height: 0)
+    }
+}
+
+private struct ToolbarMinWidthKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+private struct ToastBanner: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.callout)
+            .foregroundStyle(.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(.regularMaterial, in: Capsule())
+            .overlay(
+                Capsule().stroke(Color.secondary.opacity(0.25), lineWidth: 0.5)
+            )
+            .shadow(color: .black.opacity(0.15), radius: 6, y: 2)
     }
 }

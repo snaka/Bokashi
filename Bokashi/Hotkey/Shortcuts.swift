@@ -10,4 +10,9 @@ extension KeyboardShortcuts.Name {
         "captureRegion",
         default: .init(.six, modifiers: [.control, .option, .shift])
     )
+
+    static let captureWindow = Self(
+        "captureWindow",
+        default: .init(.five, modifiers: [.control, .option, .shift])
+    )
 }

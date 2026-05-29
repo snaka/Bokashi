@@ -48,8 +48,10 @@ targets:
         # lives in the SPARKLE_ED_PRIVATE_KEY repo secret. See RELEASE.md
         # for the one-time setup.
         SUPublicEDKey: l1QQwq5QWJjOR6kG5iP//6vDgKLnAGmjbw2Hwk7dZM4=
-        # Phase 1: manual checks only ("Check for Updates…" menu).
-        # A user-facing toggle in Settings comes later.
+        # Default value used until the user flips the Settings toggle
+        # (Settings → General → "Check for updates automatically").
+        # Sparkle then persists their choice in UserDefaults and ignores
+        # this Info.plist value on subsequent launches.
         SUEnableAutomaticChecks: false
     settings:
       base:
