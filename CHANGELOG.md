@@ -5,6 +5,68 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-05-30
+
+A polish-and-papercut release. Capture-mode hotkeys realign to the
+macOS digit conventions, the menu bar finally shows what those combos
+are, the raw capture is on your clipboard the moment you press the
+shortcut, and Sparkle's automatic update check is now flippable from
+Settings.
+
+### Added
+
+- **Clipboard-on-capture.** The raw screenshot is copied to the
+  clipboard the instant capture completes, before the editor opens.
+  The existing *Copy & Close* flow still overwrites with the annotated
+  image when you confirm, so "paste right away" and "edit, then paste"
+  both work without extra clicks.
+- **Window-capture hotkey.** New default `⌃⌥⇧5` triggers the
+  click-to-pick window flow, joining full-screen and region as a
+  first-class shortcut. Configurable through `UserDefaults` /
+  KeyboardShortcuts.
+- **Hotkey hints in the menu bar.** Each *Capture* item shows its
+  bound combo on the right (e.g. `⌃⌥⇧3`), so you no longer have to
+  remember the mapping. Hints follow whatever combo is currently
+  bound, ready for the future Settings rebinder.
+- **"N items masked" toast.** After the editor's *Detect* button
+  finishes, a transient banner reports either the count of new masks
+  or "No sensitive info detected". Auto-mask-on-capture stays silent
+  on empty results so it doesn't toast every screenshot.
+- **Automatic update-check toggle.** New *Settings → General* tab with
+  a *Check for updates automatically* switch bound to Sparkle's
+  `SPUUpdater.automaticallyChecksForUpdates`. Default stays off so
+  the first launch behavior is unchanged; flip it on and Sparkle
+  starts polling the appcast in the background.
+
+### Changed
+
+- **Capture hotkey digits aligned with macOS.** Defaults are now
+  `⌃⌥⇧3` (full screen), `⌃⌥⇧4` (region), `⌃⌥⇧5` (window) — mirroring
+  the system's `⇧⌘3 / ⇧⌘4 / ⇧⌘5` mapping so the digit is recallable.
+  Previous defaults were `⌃⌥⇧4 / ⌃⌥⇧6 / ⌃⌥⇧5`. The `⌃⌥⇧` prefix is
+  retained so we don't clash with the reserved system shortcuts.
+  A one-shot migration runs on first launch of v0.8.0: if your
+  persisted shortcut still matches the previous default, it is
+  rewritten to the new default; explicitly-customized values are left
+  alone. After migration, the schema is marked and never re-runs.
+- **Editor window minimum size now respects the toolbar.** The
+  toolbar's natural width is measured at runtime and used as the
+  window's `contentMinSize`, so resizing can no longer hide any
+  toolbar control behind the chevron overflow.
+- **Menu bar version string** reads `CFBundleShortVersionString` from
+  the app bundle instead of a hand-maintained constant. The v0.7.0
+  build shipped showing `Bokashi v0.0.0` because that constant had
+  never been bumped; with this change the menu follows
+  `MARKETING_VERSION` automatically on every release.
+
+### Notes
+
+- Builds on macOS 14+. No bundle identifier or signing identity
+  changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
+  normal signed appcast flow.
+
+[0.8.0]: https://github.com/snaka/Bokashi/releases/tag/v0.8.0
+
 ## [0.7.0] - 2026-05-12
 
 First release that exercises Sparkle's full download / install flow:
