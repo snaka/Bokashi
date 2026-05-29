@@ -16,13 +16,13 @@ a tagged GitHub release where useful.
 - [x] Menubar status item (via SwiftUI `MenuBarExtra`)
 - [x] Full-screen capture via `ScreenCaptureKit`
 - [x] Screen Recording permission request flow
-- [x] One global hotkey (`⌃⌥⇧4` for full screen)
+- [x] One global hotkey (`⌃⌥⇧3` for full screen)
 
 ## M2 — Capture modes ✅
 
 - [x] Window selection capture (`SCShareableContent.windows`)
 - [x] Region selection via transparent overlay window
-- [x] Per-mode hotkeys (`⌃⌥⇧6` for region; window picker is menu-driven)
+- [x] Per-mode hotkeys (`⌃⌥⇧4` for region; window picker is menu-driven)
 
 ## M3 — Annotation editor → v0.1.0 ✅
 
@@ -75,9 +75,6 @@ folded into a release prep PR.
   existing Done-on-export copy still runs afterward and overwrites with
   the annotated image (so "paste right away" and "edit, then paste"
   both work without extra clicks)
-- Per-mode capture hotkey for window selection (currently full-screen is
-  `⌃⌥⇧4` and region is `⌃⌥⇧6`; window picker is menu-driven — add a
-  third hotkey, e.g. `⌃⌥⇧5`)
 - Hotkey rebinding UI via `KeyboardShortcuts`
 - Configurable save destination in Settings
 - Designed (rather than placeholder) app + menubar icons
