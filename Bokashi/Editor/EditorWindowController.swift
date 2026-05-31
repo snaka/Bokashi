@@ -25,7 +25,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
         window.delegate = self
-        weak var weakWindow = window
+        weak let weakWindow = window
         let host = NSHostingController(
             rootView: EditorView(
                 image: image,
