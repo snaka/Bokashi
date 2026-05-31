@@ -5,6 +5,20 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-05-31
+
+A small fix to the window picker.
+
+### Fixed
+
+- **Window picker now targets the window you actually see.** When
+  windows overlap, hovering and clicking resolve to the front-most
+  window under the cursor instead of one hidden behind it. Previously
+  an occluded window could be selected and jump to the front, making
+  the window you meant to capture hard to pick. `SCShareableContent`
+  does not guarantee z-order, so candidates are now ordered
+  front-to-back via the on-screen window list before hit-testing.
+
 ## [0.8.0] - 2026-05-30
 
 A polish-and-papercut release. Capture-mode hotkeys realign to the
@@ -65,6 +79,7 @@ Settings.
   changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
   normal signed appcast flow.
 
+[0.8.1]: https://github.com/snaka/Bokashi/releases/tag/v0.8.1
 [0.8.0]: https://github.com/snaka/Bokashi/releases/tag/v0.8.0
 
 ## [0.7.0] - 2026-05-12

@@ -81,11 +81,35 @@ final class WindowPicker {
     private func loadCandidates() async throws -> [SCWindow] {
         let content = try await SCShareableContent.current
         let myBundleID = Bundle.main.bundleIdentifier
-        return content.windows.filter { sc in
+        let windows = content.windows.filter { sc in
             sc.isOnScreen
                 && sc.windowLayer == 0
                 && (sc.title?.isEmpty == false)
                 && sc.owningApplication?.bundleIdentifier != myBundleID
+        }
+        return orderedFrontToBack(windows)
+    }
+
+    /// Orders windows front-to-back by their on-screen z-order.
+    ///
+    /// `SCShareableContent.current.windows` does not guarantee z-order, so the
+    /// cursor hit-test in `handleMouseMoved`/`handleClick` could resolve to a
+    /// window occluded at the cursor point instead of the one actually visible
+    /// there. Sorting by the on-screen window list (front-to-back) makes
+    /// `first(where:)` pick the front-most window under the cursor.
+    private func orderedFrontToBack(_ windows: [SCWindow]) -> [SCWindow] {
+        let info = CGWindowListCopyWindowInfo(
+            [.optionOnScreenOnly, .excludeDesktopElements],
+            kCGNullWindowID
+        ) as? [[String: Any]] ?? []
+        var zIndex: [CGWindowID: Int] = [:]
+        for (index, entry) in info.enumerated() {
+            if let number = (entry[kCGWindowNumber as String] as? NSNumber)?.uint32Value {
+                zIndex[number] = index
+            }
+        }
+        return windows.sorted { lhs, rhs in
+            (zIndex[lhs.windowID] ?? .max) < (zIndex[rhs.windowID] ?? .max)
         }
     }
 
