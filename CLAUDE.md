@@ -22,8 +22,10 @@ The user-facing pitch is in [`README.md`](README.md). The full roadmap is in
   global hotkeys, menubar status item, etc.).
 - **Capture API:** `ScreenCaptureKit`. Do not use the deprecated
   `CGWindowListCreateImage` family.
-- **Deployment target:** macOS 14.0+. Do not introduce APIs that require
-  newer versions without discussion.
+- **Deployment target:** macOS 26.0+ (raised from 14.0 in 2026-07 for the
+  Foundation Models framework). Apple Intelligence availability must still
+  be checked at runtime — macOS 26 runs on some Intel Macs and users can
+  keep Apple Intelligence off.
 - **Project generation:** [XcodeGen](https://github.com/yonaskolb/XcodeGen).
   The `.xcodeproj` is gitignored; edit `project.yml` and re-run `xcodegen`.
 - **Module layout:**
