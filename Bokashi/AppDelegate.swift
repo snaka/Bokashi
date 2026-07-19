@@ -19,6 +19,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NotificationManager.shared.setUp()
+        DetectionSettings.removeObsoleteOllamaDefaults()
         migrateCaptureHotkeysIfNeeded()
         registerHotkeys()
     }

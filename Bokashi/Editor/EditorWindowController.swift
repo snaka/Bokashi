@@ -57,6 +57,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         window.center()
 
         Task { @MainActor [state, image, autoMaskOnCapture] in
+            AppleIntelligenceSensitiveRegionDetector.prewarmIfNeeded()
             await state.runOCR(on: image)
             if autoMaskOnCapture {
                 // Silent on empty: when auto-mask runs as part of capture

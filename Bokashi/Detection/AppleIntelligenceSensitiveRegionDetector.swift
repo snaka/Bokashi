@@ -57,7 +57,7 @@ struct AppleIntelligenceSensitiveRegionDetector: SensitiveRegionDetector {
     /// Pages the on-device model in ahead of the first Detect click.
     /// (Task 8 adds a DetectionSettings gate once that type exists.)
     static func prewarmIfNeeded() {
-        guard isModelAvailable else { return }
+        guard DetectionSettings.shared.aiDetectionEnabled, isModelAvailable else { return }
         LanguageModelSession(instructions: instructions).prewarm()
     }
 
