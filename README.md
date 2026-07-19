@@ -30,7 +30,7 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Annotation tools (arrow / box / ellipse / line) | ✅ |
 | Color & stroke-width pickers, undo / redo | ✅ |
 | Manual mosaic masking | ✅ |
-| On-device sensitive-info detection (email / phone / address / name) | ✅ |
+| On-device sensitive-info detection (email / phone / address / name, plus faces/avatars and Apple Intelligence-enhanced detection on eligible Macs) | ✅ |
 | Click-to-mask any OCR'd text region | ✅ |
 | Auto-mask on capture (menubar toggle) | ✅ |
 | Developer ID signed + notarized releases | ✅ |
@@ -88,8 +88,8 @@ swift test --package-path Packages/BokashiCore
 
 ## Requirements
 
-- macOS 14 (Sonoma) or later
-- Xcode 15 or later (for building from source)
+- macOS 26 (Tahoe) or later
+- Xcode 26 or later (for building from source)
 
 ## License
 
