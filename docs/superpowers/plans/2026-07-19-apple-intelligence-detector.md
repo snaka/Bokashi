@@ -493,7 +493,9 @@ git add project.yml CLAUDE.md
 git commit -m "chore: raise deployment target to macOS 26"
 ```
 
----### Task 5: FaceSensitiveRegionDetector
+---
+
+### Task 5: FaceSensitiveRegionDetector
 
 Covers the "profile avatars" case the deleted Ollama prompt handled — a text LLM cannot see images. Deterministic, fast, no Apple Intelligence dependency. Mirrors `OCRRunner`'s continuation + coordinate-flip idiom (Vision returns normalized bottom-left-origin rects; annotations use top-left pixel rects).
 
