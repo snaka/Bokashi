@@ -13,37 +13,38 @@ enum AutoMasker {
         observations: [OCRRunner.TextObservation],
         customTerms: [String]
     ) async -> [Detection] {
+        // Order is dedup priority: deterministic detectors first so their
+        // precise rects win over near-duplicate AI findings.
         var detectors: [any SensitiveRegionDetector] = [
             OCRSensitiveRegionDetector(observations: observations, customTerms: customTerms)
         ]
-
-        let ollama = OllamaDetectorSettings.shared
-        if ollama.isEnabled, !ollama.trimmedModel.isEmpty {
-            detectors.append(
-                OllamaSensitiveRegionDetector(
-                    endpoint: ollama.trimmedEndpoint,
-                    model: ollama.trimmedModel
-                )
-            )
+        let settings = DetectionSettings.shared
+        if settings.faceMaskingEnabled {
+            detectors.append(FaceSensitiveRegionDetector())
+        }
+        if settings.aiDetectionEnabled, AppleIntelligenceSensitiveRegionDetector.isModelAvailable {
+            detectors.append(AppleIntelligenceSensitiveRegionDetector(observations: observations))
         }
 
-        var detections: [Detection] = []
+        var labeled: [(region: DetectedRegion, detectorIdentifier: String)] = []
         for detector in detectors {
             do {
                 let regions = try await detector.detect(in: image)
-                for region in regions {
-                    let annotation = Annotation(
-                        kind: .mosaic(rect: region.rect),
-                        style: .defaultOutline
-                    )
-                    detections.append(
-                        Detection(annotation: annotation, detectorIdentifier: detector.identifier)
-                    )
-                }
+                labeled.append(contentsOf: regions.map { ($0, detector.identifier) })
             } catch {
                 continue
             }
         }
-        return detections
+
+        let kept = RegionDeduplicator.keptIndices(of: labeled.map(\.region))
+        return kept.map { index in
+            Detection(
+                annotation: Annotation(
+                    kind: .mosaic(rect: labeled[index].region.rect),
+                    style: .defaultOutline
+                ),
+                detectorIdentifier: labeled[index].detectorIdentifier
+            )
+        }
     }
 }

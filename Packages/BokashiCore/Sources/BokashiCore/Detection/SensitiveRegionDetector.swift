@@ -13,10 +13,10 @@ public struct DetectedRegion: Hashable, Sendable {
 }
 
 /// A pluggable detector that returns rectangles in image-pixel coordinates
-/// that should be masked. Implementations may use OCR + heuristics (current
-/// path), bundled CoreML models, local vision LLMs, or anything else; the
-/// orchestrator merges their output and feeds it into the annotation
-/// pipeline.
+/// that should be masked. Implementations may use OCR + heuristics, Vision
+/// requests, the on-device Foundation Models LLM, bundled CoreML models, or
+/// anything else; the orchestrator merges their output and feeds it into
+/// the annotation pipeline.
 public protocol SensitiveRegionDetector {
     /// Stable identifier for diagnostics and per-detector toggles.
     var identifier: String { get }

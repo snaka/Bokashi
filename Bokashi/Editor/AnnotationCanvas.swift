@@ -109,7 +109,8 @@ struct AnnotationCanvas: View {
     private static func debugColor(for source: String) -> Color {
         switch source {
         case "ocr": return .blue
-        case "ollama": return .orange
+        case "appleIntelligence": return .orange
+        case "face": return .green
         default: return .gray
         }
     }

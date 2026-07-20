@@ -96,12 +96,18 @@ folded into a release prep PR.
 ### Detection
 
 Privacy-first: every detector runs on-device; cloud LLM APIs are
-explicitly excluded.
+explicitly excluded. The LLM layer is Apple's on-device Foundation
+Models (macOS 26+; replaced the Ollama vision-LLM detector in 2026-07)
+with a Vision face detector covering avatars.
 
 - Reviewable detection candidates (preview boxes before applying)
 - Local CoreML detector for chat-app UI patterns (Slack / Twitter /
   Discord) — bundled or downloadable model packs
-- More auto-detectors: credit cards, IP addresses, AWS keys, My Number
+- More auto-detectors: IP addresses, AWS keys, My Number (credit
+  cards and API keys are now covered by the Apple Intelligence
+  detector on eligible machines)
+- Multimodal Foundation Models input for avatar-precision masking —
+  revisit when the OS-27 device matrix is clear
 
 ### Distribution / CI
 
