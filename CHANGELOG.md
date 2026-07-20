@@ -5,6 +5,52 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-07-20
+
+On-device sensitive-info detection moves to Apple's own AI. The
+optional Ollama vision-LLM detector is gone, replaced by Apple
+Intelligence for contextual text and a Vision-based face detector for
+avatars — both run entirely on your Mac with no setup, no network, and
+no model downloads.
+
+### Added
+
+- **Apple Intelligence detection.** Detect now routes OCR text through
+  Apple's on-device Foundation Models to catch sensitive strings the
+  pattern-based detectors miss: usernames and account handles, API
+  keys and other secrets, credit card numbers, and names in context.
+  The language model only decides *which* text is sensitive; the mask
+  rectangles come from Vision's OCR bounding boxes, so coordinates stay
+  exact. Toggle it in Settings → Detectors; a status line shows whether
+  Apple Intelligence is ready, still downloading, needs enabling, or is
+  unsupported on this Mac. (#35)
+- **Face and avatar masking.** A Vision face detector masks any
+  detected face, including profile pictures — covering the case the old
+  vision-LLM prompt handled without needing a language model. Runs on
+  every supported Mac; toggle it in Settings → Detectors. (#35)
+
+### Changed
+
+- **Requires macOS 26 (Tahoe).** The deployment target moves from
+  macOS 14 to 26 for the Foundation Models framework. The
+  pattern-based detectors (email, phone, address, name, custom terms)
+  continue to work on every supported machine; Apple Intelligence
+  detection additionally needs Apple Silicon with Apple Intelligence
+  enabled and degrades silently where it is unavailable. (#35)
+
+### Removed
+
+- **Ollama vision-LLM detector.** The optional detector added in
+  v0.5.0, along with its endpoint/model settings and connection test,
+  is removed in favor of the built-in Apple Intelligence detector. Its
+  stored preferences are cleared automatically on first launch. (#35)
+
+### Privacy
+
+- All detection still runs **on-device**. With Ollama gone, the
+  detection pipeline makes no network calls at all; no cloud-LLM
+  integrations exist and none are planned.
+
 ## [0.8.1] - 2026-05-31
 
 A small fix to the window picker.
@@ -79,6 +125,7 @@ Settings.
   changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
   normal signed appcast flow.
 
+[0.9.0]: https://github.com/snaka/Bokashi/releases/tag/v0.9.0
 [0.8.1]: https://github.com/snaka/Bokashi/releases/tag/v0.8.1
 [0.8.0]: https://github.com/snaka/Bokashi/releases/tag/v0.8.0
 
