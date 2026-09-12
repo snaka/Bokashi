@@ -5,6 +5,52 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2026-09-12
+
+Bokashi can now mask an image it did not capture itself. Anything on
+your clipboard — a screenshot from another tool, an image copied out of
+a browser or a chat app — opens in the editor with the same annotation
+and masking tools.
+
+### Added
+
+- **New from Clipboard.** A menubar item and a `⌃⌥⇧V` hotkey open the
+  editor on whatever image the clipboard holds. Reading the clipboard
+  needs no Screen Recording permission, so this is the one path that
+  works before you grant it. The image is decoded at its true pixel
+  dimensions, so masks line up with the pixels you see. (#39)
+
+### Changed
+
+- **Auto-mask now covers imported images too.** The menubar toggle is
+  relabelled from "Auto-mask sensitive info on capture" to
+  **"Auto-mask sensitive info"**, because it applies to anything that
+  opens in the editor rather than only to fresh captures. Your existing
+  setting carries over. (#39, #40)
+- **Copying offers PNG alongside TIFF.** Bokashi previously put TIFF
+  only on the clipboard, which for a Retina screenshot is roughly 24 MB
+  of uncompressed pixels that every app has to copy when you paste. PNG
+  now comes first and TIFF is still offered, so anything that can only
+  read TIFF is unaffected. Measured on a 640×400 image: 5,820 bytes of
+  PNG against 1,027,430 of TIFF. (#40)
+
+### Notes
+
+- "New from Clipboard" needs the image itself on the clipboard. Copying
+  a *file* in Finder puts a file reference there rather than image data,
+  and Bokashi will report that the clipboard holds no image.
+
+## [0.9.1] - 2026-09-01
+
+A packaging fix. The app itself is unchanged from v0.9.0.
+
+### Fixed
+
+- **Homebrew cask now states its macOS requirement correctly.** The
+  generated cask wrote `depends_on macos: ">= :tahoe"`, a string
+  Homebrew compares lexically instead of by version. It now uses the
+  symbol form, `depends_on macos: :tahoe`. (#37)
+
 ## [0.9.0] - 2026-07-20
 
 On-device sensitive-info detection moves to Apple's own AI. The
@@ -125,6 +171,8 @@ Settings.
   changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
   normal signed appcast flow.
 
+[0.10.0]: https://github.com/snaka/Bokashi/releases/tag/v0.10.0
+[0.9.1]: https://github.com/snaka/Bokashi/releases/tag/v0.9.1
 [0.9.0]: https://github.com/snaka/Bokashi/releases/tag/v0.9.0
 [0.8.1]: https://github.com/snaka/Bokashi/releases/tag/v0.8.1
 [0.8.0]: https://github.com/snaka/Bokashi/releases/tag/v0.8.0
