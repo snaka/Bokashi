@@ -35,14 +35,17 @@ struct BokashiApp: App {
 
         Text("Bokashi v\(Self.marketingVersion)")
         Divider()
-        captureButton("Capture Full Screen", shortcut: .captureFullScreen) {
+        menuButton("Capture Full Screen", shortcut: .captureFullScreen) {
             await appDelegate.captureCoordinator.captureFullScreen()
         }
-        captureButton("Capture Region…", shortcut: .captureRegion) {
+        menuButton("Capture Region…", shortcut: .captureRegion) {
             await appDelegate.captureCoordinator.captureRegion()
         }
-        captureButton("Capture Window…", shortcut: .captureWindow) {
+        menuButton("Capture Window…", shortcut: .captureWindow) {
             await appDelegate.captureCoordinator.pickAndCaptureWindow()
+        }
+        menuButton("New from Clipboard", shortcut: .importFromClipboard) {
+            appDelegate.clipboardImporter.importImage(alertWhenEmpty: true)
         }
         Divider()
         Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
@@ -61,21 +64,17 @@ struct BokashiApp: App {
     }
 
     @ViewBuilder
-    private func captureButton(
+    private func menuButton(
         _ title: String,
         shortcut name: KeyboardShortcuts.Name,
         action: @escaping () async -> Void
     ) -> some View {
         let shortcut = KeyboardShortcuts.getShortcut(for: name)
         if let key = shortcut?.swiftUIKeyEquivalent {
-            Button(title) {
-                Task { @MainActor in await action() }
-            }
-            .keyboardShortcut(key, modifiers: shortcut?.swiftUIModifiers ?? [])
+            Button(title) { Task { @MainActor in await action() } }
+                .keyboardShortcut(key, modifiers: shortcut?.swiftUIModifiers ?? [])
         } else {
-            Button(title) {
-                Task { @MainActor in await action() }
-            }
+            Button(title) { Task { @MainActor in await action() } }
         }
     }
 }

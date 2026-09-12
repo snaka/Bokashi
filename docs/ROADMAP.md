@@ -80,6 +80,38 @@ folded into a release prep PR; what actually shipped is recorded in
   visualize which areas are masked, for last-mile coverage check
   before export)
 
+### Input sources
+
+Every entry point today starts with a fresh capture. These let Bokashi
+mask an image it did not take itself.
+
+- Share Extension so Bokashi shows up in the macOS Share menu
+  (`com.apple.share-services`) — a second app-extension target in
+  `project.yml`, with its own bundle ID and entitlements. Signing and
+  notarization need no new steps: `xcodebuild archive` + `-exportArchive`
+  already sign nested bundles. Keep the extension thin and hand the image
+  to the main app's `EditorPresenter.present(image:)`; the handoff
+  mechanism (App Group container vs. pasteboard plus a URL scheme) is
+  still open. Worth documenting for users: macOS lists a Share Extension
+  only after the host app has launched once, and it may need enabling
+  under System Settings → General → Login Items & Extensions → Sharing.
+  An `NSServices` entry is the cheap fallback if the extension turns out
+  to be heavy.
+- Import the clipboard image into the editor — a menubar item plus a
+  fourth `KeyboardShortcuts.Name`. The item stays enabled and a click
+  that finds no image gets an alert: `MenuBarExtra(.menu)` rebuilds on
+  observable state changes rather than on each open, so a `.disabled`
+  bound to the pasteboard would show stale state. Route it straight to
+  `EditorPresenter.present(image:)`
+  rather than through `CaptureCoordinator.present()`, which would write
+  the image back to the clipboard it just came from. It must also stay
+  clear of `ensurePermission()`: reading the pasteboard needs no Screen
+  Recording grant, which makes this the one path that works before the
+  user grants one. Auto-mask follows the existing capture toggle, since
+  `EditorPresenter.present(image:)` reads
+  `Preferences.shared.autoMaskOnCapture` itself. Landed; still to be
+  folded into a release.
+
 ### Detection
 
 Privacy-first: every detector runs on-device; cloud LLM APIs are

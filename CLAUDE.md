@@ -86,6 +86,7 @@ If you are not the maintainer and want to build locally, either:
 |---|---|
 | Annotation data model (value types) | `Packages/BokashiCore/Sources/BokashiCore/Annotation/` |
 | Capture orchestration (ScreenCaptureKit wrappers) | `Bokashi/Capture/` |
+| Clipboard import (pasteboard image into the editor) | `Bokashi/Import/` |
 | Region-select transparent overlay | `Bokashi/Capture/Overlay/` |
 | Editor window and Canvas drawing | `Bokashi/Editor/` |
 | Tool implementations (arrow / box / ellipse / line / mosaic) | `Bokashi/Editor/Tools/` |

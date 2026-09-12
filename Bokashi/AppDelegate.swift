@@ -6,6 +6,7 @@ import Sparkle
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let editorPresenter = EditorPresenter()
     let customTermsExtractionPresenter = CustomTermsExtractionPresenter()
+    lazy var clipboardImporter = ClipboardImporter(editorPresenter: editorPresenter)
     lazy var captureCoordinator = CaptureCoordinator(
         editorPresenter: editorPresenter,
         customTermsExtractionPresenter: customTermsExtractionPresenter
@@ -66,6 +67,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         KeyboardShortcuts.onKeyDown(for: .captureWindow) { [weak self] in
             Task { @MainActor in
                 await self?.captureCoordinator.pickAndCaptureWindow()
+            }
+        }
+        KeyboardShortcuts.onKeyDown(for: .importFromClipboard) { [weak self] in
+            Task { @MainActor in
+                self?.clipboardImporter.importImage(alertWhenEmpty: false)
             }
         }
     }
