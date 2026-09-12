@@ -68,5 +68,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 await self?.captureCoordinator.pickAndCaptureWindow()
             }
         }
+        KeyboardShortcuts.onKeyDown(for: .importFromClipboard) { [weak self] in
+            Task { @MainActor in
+                self?.importFromClipboard()
+            }
+        }
+    }
+
+    /// Reading the pasteboard needs no Screen Recording grant, so this
+    /// deliberately skips the permission check every capture path runs.
+    /// Staying silent when the clipboard holds no image keeps a stray
+    /// hotkey press from throwing a modal in front of whatever the user
+    /// is doing.
+    func importFromClipboard() {
+        guard let image = Clipboard.readImage() else { return }
+        editorPresenter.present(image: image)
     }
 }

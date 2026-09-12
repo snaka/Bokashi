@@ -44,6 +44,10 @@ struct BokashiApp: App {
         captureButton("Capture Window…", shortcut: .captureWindow) {
             await appDelegate.captureCoordinator.pickAndCaptureWindow()
         }
+        menuButton("New from Clipboard", shortcut: .importFromClipboard) {
+            appDelegate.importFromClipboard()
+        }
+        .disabled(!Clipboard.hasImage)
         Divider()
         Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
         SettingsLink {
@@ -66,16 +70,23 @@ struct BokashiApp: App {
         shortcut name: KeyboardShortcuts.Name,
         action: @escaping () async -> Void
     ) -> some View {
+        menuButton(title, shortcut: name) {
+            Task { @MainActor in await action() }
+        }
+    }
+
+    @ViewBuilder
+    private func menuButton(
+        _ title: String,
+        shortcut name: KeyboardShortcuts.Name,
+        action: @escaping () -> Void
+    ) -> some View {
         let shortcut = KeyboardShortcuts.getShortcut(for: name)
         if let key = shortcut?.swiftUIKeyEquivalent {
-            Button(title) {
-                Task { @MainActor in await action() }
-            }
-            .keyboardShortcut(key, modifiers: shortcut?.swiftUIModifiers ?? [])
+            Button(title, action: action)
+                .keyboardShortcut(key, modifiers: shortcut?.swiftUIModifiers ?? [])
         } else {
-            Button(title) {
-                Task { @MainActor in await action() }
-            }
+            Button(title, action: action)
         }
     }
 }

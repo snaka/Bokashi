@@ -19,4 +19,11 @@ extension KeyboardShortcuts.Name {
         "captureWindow",
         default: .init(.five, modifiers: [.control, .option, .shift])
     )
+
+    // Not a capture, so it breaks the digit pattern above and borrows the
+    // paste mnemonic instead.
+    static let importFromClipboard = Self(
+        "importFromClipboard",
+        default: .init(.v, modifiers: [.control, .option, .shift])
+    )
 }
