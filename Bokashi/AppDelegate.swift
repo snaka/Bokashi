@@ -6,6 +6,7 @@ import Sparkle
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let editorPresenter = EditorPresenter()
     let customTermsExtractionPresenter = CustomTermsExtractionPresenter()
+    lazy var clipboardImporter = ClipboardImporter(editorPresenter: editorPresenter)
     lazy var captureCoordinator = CaptureCoordinator(
         editorPresenter: editorPresenter,
         customTermsExtractionPresenter: customTermsExtractionPresenter
@@ -70,18 +71,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         KeyboardShortcuts.onKeyDown(for: .importFromClipboard) { [weak self] in
             Task { @MainActor in
-                self?.importFromClipboard()
+                self?.clipboardImporter.importImage(whenEmpty: .silent)
             }
         }
-    }
-
-    /// Reading the pasteboard needs no Screen Recording grant, so this
-    /// deliberately skips the permission check every capture path runs.
-    /// Staying silent when the clipboard holds no image keeps a stray
-    /// hotkey press from throwing a modal in front of whatever the user
-    /// is doing.
-    func importFromClipboard() {
-        guard let image = Clipboard.readImage() else { return }
-        editorPresenter.present(image: image)
     }
 }

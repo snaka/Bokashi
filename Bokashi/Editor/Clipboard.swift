@@ -18,12 +18,6 @@ enum Clipboard {
         pasteboard.writeObjects([nsImage])
     }
 
-    static var hasImage: Bool {
-        NSPasteboard.general.canReadItem(
-            withDataConformingToTypes: imageTypes.map(\.rawValue)
-        )
-    }
-
     /// Decodes the pasteboard bytes directly rather than going through
     /// `NSImage`, whose `cgImage(forProposedRect:)` rasterizes at a size
     /// derived from the image's DPI. Masking has to line up with the

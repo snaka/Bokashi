@@ -45,9 +45,8 @@ struct BokashiApp: App {
             await appDelegate.captureCoordinator.pickAndCaptureWindow()
         }
         menuButton("New from Clipboard", shortcut: .importFromClipboard) {
-            appDelegate.importFromClipboard()
+            appDelegate.clipboardImporter.importImage(whenEmpty: .alert)
         }
-        .disabled(!Clipboard.hasImage)
         Divider()
         Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
         SettingsLink {

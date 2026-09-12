@@ -104,9 +104,10 @@ mask an image it did not take itself.
   the image back to the clipboard it just came from. It must also stay
   clear of `ensurePermission()`: reading the pasteboard needs no Screen
   Recording grant, which makes this the one path that works before the
-  user grants one. Open question — `EditorPresenter` reads
-  `Preferences.shared.autoMaskOnCapture` itself, so decide whether
-  auto-mask should fire on imported images too.
+  user grants one. Auto-mask follows the existing capture toggle, since
+  `EditorPresenter.present(image:)` reads
+  `Preferences.shared.autoMaskOnCapture` itself. Landed; still to be
+  folded into a release.
 
 ### Detection
 
