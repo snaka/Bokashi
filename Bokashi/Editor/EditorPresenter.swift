@@ -8,7 +8,7 @@ final class EditorPresenter {
     func present(image: CGImage) {
         let controller = EditorWindowController(
             image: image,
-            autoMaskOnCapture: Preferences.shared.autoMaskOnCapture
+            autoMask: Preferences.shared.autoMask
         )
         controller.onClosed = { [weak self, weak controller] in
             guard let controller else { return }
