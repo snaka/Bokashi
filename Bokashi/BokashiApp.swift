@@ -48,7 +48,7 @@ struct BokashiApp: App {
             appDelegate.clipboardImporter.importImage(alertWhenEmpty: true)
         }
         Divider()
-        Toggle("Auto-mask sensitive info on capture", isOn: $prefs.autoMaskOnCapture)
+        Toggle("Auto-mask sensitive info", isOn: $prefs.autoMask)
         SettingsLink {
             Text("Settings…")
         }

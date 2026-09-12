@@ -58,11 +58,10 @@ final class CaptureCoordinator {
     }
 
     private func presentNoTextDetected() {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "No text detected"
-        alert.informativeText = "Bokashi could not find any text in the selected region."
-        alert.runModal()
+        Alerts.show(
+            title: "No text detected",
+            message: "Bokashi could not find any text in the selected region."
+        )
     }
 
     private func present(_ produce: () async throws -> CGImage) async {
@@ -82,12 +81,10 @@ final class CaptureCoordinator {
         if ScreenRecordingPermission.isGranted { return true }
         if ScreenRecordingPermission.request() { return true }
 
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "Screen Recording permission required"
-        alert.informativeText = """
-            Bokashi needs Screen Recording access in System Settings to capture your screen.
-            """
+        let alert = Alerts.make(
+            title: "Screen Recording permission required",
+            message: "Bokashi needs Screen Recording access in System Settings to capture your screen."
+        )
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Cancel")
         if alert.runModal() == .alertFirstButtonReturn {
@@ -97,11 +94,10 @@ final class CaptureCoordinator {
     }
 
     private func presentError(_ error: Error) {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "Capture failed"
-        alert.informativeText = (error as? LocalizedError)?.errorDescription
-            ?? error.localizedDescription
-        alert.runModal()
+        Alerts.show(
+            title: "Capture failed",
+            message: (error as? LocalizedError)?.errorDescription
+                ?? error.localizedDescription
+        )
     }
 }

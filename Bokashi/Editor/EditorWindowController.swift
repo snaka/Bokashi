@@ -13,14 +13,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
     private let image: CGImage
     private let mosaicImage: CGImage?
     private let state = EditorState()
-    private let autoMaskOnCapture: Bool
+    private let autoMask: Bool
     private var outcome: Outcome = .copyOnClose
     var onClosed: (() -> Void)?
 
-    init(image: CGImage, autoMaskOnCapture: Bool = false) {
+    init(image: CGImage, autoMask: Bool = false) {
         self.image = image
         self.mosaicImage = MosaicRenderer.apply(to: image)
-        self.autoMaskOnCapture = autoMaskOnCapture
+        self.autoMask = autoMask
 
         let (window, contentSize) = Self.makeWindow(forImage: image)
         super.init(window: window)
@@ -56,13 +56,14 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         window.setContentSize(contentSize)
         window.center()
 
-        Task { @MainActor [state, image, autoMaskOnCapture] in
+        Task { @MainActor [state, image, autoMask] in
             AppleIntelligenceSensitiveRegionDetector.prewarmIfNeeded()
             await state.runOCR(on: image)
-            if autoMaskOnCapture {
-                // Silent on empty: when auto-mask runs as part of capture
-                // there's no user gesture to confirm; a "nothing detected"
-                // toast would just be noise.
+            if autoMask {
+                // Silent on empty: auto-mask runs because the toggle is
+                // on, not because the user asked to detect anything, so a
+                // "nothing detected" toast would just be noise. The Detect
+                // button is the gesture that earns a report.
                 await state.detectSensitiveInfo(in: image, silentIfEmpty: true)
             }
         }

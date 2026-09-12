@@ -5,15 +5,18 @@ import Foundation
 final class Preferences {
     static let shared = Preferences()
 
+    /// Still spelled "OnCapture" so existing users keep their setting;
+    /// the preference itself has covered every way an image reaches the
+    /// editor since clipboard import landed.
     private static let autoMaskKey = "BokashiAutoMaskOnCapture"
 
-    var autoMaskOnCapture: Bool {
+    var autoMask: Bool {
         didSet {
-            UserDefaults.standard.set(autoMaskOnCapture, forKey: Self.autoMaskKey)
+            UserDefaults.standard.set(autoMask, forKey: Self.autoMaskKey)
         }
     }
 
     private init() {
-        autoMaskOnCapture = UserDefaults.standard.bool(forKey: Self.autoMaskKey)
+        autoMask = UserDefaults.standard.bool(forKey: Self.autoMaskKey)
     }
 }

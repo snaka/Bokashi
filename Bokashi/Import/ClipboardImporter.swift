@@ -25,10 +25,9 @@ final class ClipboardImporter {
     }
 
     private func presentNoImage() {
-        NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "No image in the clipboard"
-        alert.informativeText = "Copy an image first, then choose New from Clipboard."
-        alert.runModal()
+        Alerts.show(
+            title: "No image in the clipboard",
+            message: "Copy an image first, then choose New from Clipboard."
+        )
     }
 }

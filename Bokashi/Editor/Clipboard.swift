@@ -15,11 +15,25 @@ enum Clipboard {
         .tiff,
     ]
 
+    /// Offers PNG alongside TIFF on a single pasteboard item. Writing an
+    /// `NSImage` offers TIFF only (`NSImage.writableTypes` is
+    /// `[public.tiff]`), which for a Retina screenshot is ~24 MB of
+    /// uncompressed pixels every receiver has to copy — including
+    /// `readImage` below, on a Bokashi-to-Bokashi round trip. TIFF stays
+    /// for anything that cannot read PNG.
     static func copy(_ image: CGImage) {
+        let item = NSPasteboardItem()
+        if let png = try? PNGWriter.data(from: image) {
+            item.setData(png, forType: .png)
+        }
+        if let tiff = NSBitmapImageRep(cgImage: image)
+            .representation(using: .tiff, properties: [:]) {
+            item.setData(tiff, forType: .tiff)
+        }
+
         let pasteboard = NSPasteboard.general
-        let nsImage = NSImage(cgImage: image, size: .zero)
         pasteboard.clearContents()
-        pasteboard.writeObjects([nsImage])
+        pasteboard.writeObjects([item])
     }
 
     /// Decodes the pasteboard bytes directly rather than going through
