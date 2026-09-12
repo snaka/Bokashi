@@ -38,7 +38,7 @@ a tagged GitHub release where useful.
 - [x] Mosaic tool (rectangle selection, `CIPixellate`)
 - [x] Mosaic stays as an editable annotation layer until export
 - [x] **v0.2.0 release on GitHub Releases** (mosaic only; Settings UI,
-      Sparkle, and signed distribution deferred — see *Beyond M5*)
+      Sparkle, and signed distribution deferred — see *Backlog*)
 
 ## M5 — Automatic sensitive-info detection (opt-in) → v0.3.0 ✅
 
@@ -63,18 +63,11 @@ case rather than as a single batch.
 ## Backlog
 
 Unscheduled work, grouped by theme. Items move out of here when they get
-folded into a release prep PR.
+folded into a release prep PR; what actually shipped is recorded in
+[`CHANGELOG.md`](../CHANGELOG.md).
 
 ### Polish / UX
 
-- Editor window minimum size clamped so the toolbar always fits
-  (recovering a hidden toolbar is fiddly; set `contentMinSize` on the
-  window so it cannot be made smaller than the toolbar in the first
-  place)
-- Copy to clipboard immediately on capture, before the editor opens; the
-  existing Done-on-export copy still runs afterward and overwrites with
-  the annotated image (so "paste right away" and "edit, then paste"
-  both work without extra clicks)
 - Hotkey rebinding UI via `KeyboardShortcuts`
 - Configurable save destination in Settings
 - Designed (rather than placeholder) app + menubar icons
@@ -86,12 +79,6 @@ folded into a release prep PR.
 - Temporarily highlight masked regions in the editor (toggle to
   visualize which areas are masked, for last-mile coverage check
   before export)
-- "N items masked" toast after auto-detect
-
-### Update mechanism
-
-- Sparkle: Settings toggle for automatic background checks (currently
-  manual-only; `SUEnableAutomaticChecks` defaults to false)
 
 ### Detection
 
@@ -112,10 +99,6 @@ with a Vision face detector covering avatars.
 ### Distribution / CI
 
 - Submit to the official `homebrew/cask` repo (deferred until v1.0)
-- CI maintenance: migrate `release.yml` actions (`actions/checkout`,
-  `actions/upload-artifact`, `softprops/action-gh-release`) off
-  Node.js 20 before 2026-09-16 when Node 20 is removed from runners
-  (deprecation warning surfaced in the v0.5.0 release run)
 
 ### Open questions
 
