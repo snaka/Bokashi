@@ -5,6 +5,10 @@ import UniformTypeIdentifiers
 
 @MainActor
 enum Clipboard {
+    /// Order matters: `availableType(from:)` honours it, and AppKit's own
+    /// `writeObjects` (so Preview, and `copy` below) offers TIFF only.
+    /// Preferring PNG keeps a Retina screenshot to a few MB instead of the
+    /// ~24 MB an uncompressed TIFF costs to copy and decode.
     private static let imageTypes: [NSPasteboard.PasteboardType] = [
         .png,
         NSPasteboard.PasteboardType(UTType.jpeg.identifier),

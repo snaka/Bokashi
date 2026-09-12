@@ -98,8 +98,11 @@ mask an image it did not take itself.
   An `NSServices` entry is the cheap fallback if the extension turns out
   to be heavy.
 - Import the clipboard image into the editor — a menubar item plus a
-  fourth `KeyboardShortcuts.Name`, disabled when `NSPasteboard.general`
-  holds no image. Route it straight to `EditorPresenter.present(image:)`
+  fourth `KeyboardShortcuts.Name`. The item stays enabled and a click
+  that finds no image gets an alert: `MenuBarExtra(.menu)` rebuilds on
+  observable state changes rather than on each open, so a `.disabled`
+  bound to the pasteboard would show stale state. Route it straight to
+  `EditorPresenter.present(image:)`
   rather than through `CaptureCoordinator.present()`, which would write
   the image back to the clipboard it just came from. It must also stay
   clear of `ensurePermission()`: reading the pasteboard needs no Screen

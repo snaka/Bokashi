@@ -71,7 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         KeyboardShortcuts.onKeyDown(for: .importFromClipboard) { [weak self] in
             Task { @MainActor in
-                self?.clipboardImporter.importImage(whenEmpty: .silent)
+                self?.clipboardImporter.importImage(alertWhenEmpty: false)
             }
         }
     }
