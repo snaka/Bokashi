@@ -17,7 +17,7 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 
 - **Native macOS** — Swift, SwiftUI / AppKit, ScreenCaptureKit. No Electron.
 - **Annotation-first** — arrows, boxes, ellipses, lines, undo/redo. Designed to feel right.
-- **Privacy-aware** — captures stay in memory; closing the editor copies them to your clipboard. Bokashi never writes a screenshot to disk unless you explicitly ask. Manual mosaic masking now, and automatic detection of sensitive information (with Japanese-language support) on the roadmap.
+- **Privacy-aware** — captures stay in memory; closing the editor copies them to your clipboard. Bokashi never writes a screenshot to disk unless you explicitly ask, except for images sent in via the Share menu, which wait in an App Group container until Bokashi next launches and imports them. Manual mosaic masking now, and automatic detection of sensitive information (with Japanese-language support) on the roadmap.
 - **Open source** — MIT licensed. Hackable, contribution-friendly.
 
 ## Features
@@ -33,7 +33,7 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Manual mosaic masking | ✅ |
 | On-device sensitive-info detection (email / phone / address / name, plus faces/avatars and Apple Intelligence-enhanced detection on eligible Macs) | ✅ |
 | Click-to-mask any OCR'd text region | ✅ |
-| Auto-mask on capture (menubar toggle) | ✅ |
+| Auto-mask sensitive info (menubar toggle) | ✅ |
 | Developer ID signed + notarized releases | ✅ |
 | Homebrew Cask install (`snaka/tap/bokashi`) | ✅ |
 | Auto-update via Sparkle | Planned (later) |

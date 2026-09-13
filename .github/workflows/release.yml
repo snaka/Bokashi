@@ -213,6 +213,7 @@ jobs:
             zap trash: [
               "~/Library/Preferences/com.snaka.Bokashi.plist",
               "~/Library/Caches/com.snaka.Bokashi",
+              "~/Library/Group Containers/7JNK6BM249.com.snaka.Bokashi",
             ]
           end
           EOF
