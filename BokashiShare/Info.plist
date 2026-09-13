@@ -10,8 +10,6 @@
 	<string>Bokashi</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIconName</key>
-	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,31 +17,25 @@
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.snaka.Bokashi</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>bokashi</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSUIElement</key>
-	<true/>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2026 snaka. MIT License.</string>
-	<key>SUEnableAutomaticChecks</key>
-	<false/>
-	<key>SUFeedURL</key>
-	<string>https://snaka.github.io/Bokashi/appcast.xml</string>
-	<key>SUPublicEDKey</key>
-	<string>l1QQwq5QWJjOR6kG5iP//6vDgKLnAGmjbw2Hwk7dZM4=</string>
+	<key>NSExtension</key>
+	<dict>
+		<key>NSExtensionAttributes</key>
+		<dict>
+			<key>NSExtensionActivationRule</key>
+			<dict>
+				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
+				<integer>1</integer>
+			</dict>
+		</dict>
+		<key>NSExtensionPointIdentifier</key>
+		<string>com.apple.share-services</string>
+		<key>NSExtensionPrincipalClass</key>
+		<string>ShareViewController</string>
+	</dict>
 </dict>
 </plist>

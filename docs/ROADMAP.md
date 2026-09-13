@@ -80,24 +80,6 @@ folded into a release prep PR; what actually shipped is recorded in
   visualize which areas are masked, for last-mile coverage check
   before export)
 
-### Input sources
-
-Clipboard import shipped in v0.10.0; what is left is reaching Bokashi
-from another app's Share menu.
-
-- Share Extension so Bokashi shows up in the macOS Share menu
-  (`com.apple.share-services`) — a second app-extension target in
-  `project.yml`, with its own bundle ID and entitlements. Signing and
-  notarization need no new steps: `xcodebuild archive` + `-exportArchive`
-  already sign nested bundles. Keep the extension thin and hand the image
-  to the main app's `EditorPresenter.present(image:)`; the handoff
-  mechanism (App Group container vs. pasteboard plus a URL scheme) is
-  still open. Worth documenting for users: macOS lists a Share Extension
-  only after the host app has launched once, and it may need enabling
-  under System Settings → General → Login Items & Extensions → Sharing.
-  An `NSServices` entry is the cheap fallback if the extension turns out
-  to be heavy.
-
 ### Detection
 
 Privacy-first: every detector runs on-device; cloud LLM APIs are
