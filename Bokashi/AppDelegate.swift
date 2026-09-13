@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let editorPresenter = EditorPresenter()
     let customTermsExtractionPresenter = CustomTermsExtractionPresenter()
     lazy var clipboardImporter = ClipboardImporter(editorPresenter: editorPresenter)
+    lazy var shareImportHandler = ShareImportHandler(editorPresenter: editorPresenter)
     lazy var captureCoordinator = CaptureCoordinator(
         editorPresenter: editorPresenter,
         customTermsExtractionPresenter: customTermsExtractionPresenter
@@ -23,6 +24,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         DetectionSettings.removeObsoleteOllamaDefaults()
         migrateCaptureHotkeysIfNeeded()
         registerHotkeys()
+        shareImportHandler.importPending()
+    }
+
+    /// The share extension writes the image into the App Group inbox and
+    /// then opens `bokashi://import` purely to say "look now" — the URL
+    /// carries no payload. Launch drains the same inbox, so it does not
+    /// matter whether this app was already running.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        shareImportHandler.importPending()
     }
 
     /// `KeyboardShortcuts.Name.init` materializes its `default:` into
