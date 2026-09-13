@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>BokashiAppGroupIdentifier</key>
-	<string>$(TeamIdentifierPrefix)com.snaka.Bokashi</string>
+	<string>$(DEVELOPMENT_TEAM).com.snaka.Bokashi</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

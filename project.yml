@@ -43,12 +43,18 @@ targets:
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSHumanReadableCopyright: "Copyright © 2026 snaka. MIT License."
-        # $(TeamIdentifierPrefix) expands to the signing team plus a dot,
-        # so local (Personal Team) and CI (Developer ID) builds each get a
-        # group ID that matches their own signature. Swift cannot expand
-        # build settings, so the value is published here and read back at
-        # runtime.
-        BokashiAppGroupIdentifier: $(TeamIdentifierPrefix)com.snaka.Bokashi
+        # $(DEVELOPMENT_TEAM) expands to the signing team ID, so local
+        # (Personal Team) and CI (Developer ID) builds each get a group ID
+        # that matches their own signature. Swift cannot expand build
+        # settings, so the value is published here and read back at
+        # runtime. Deliberately not $(TeamIdentifierPrefix): that variable
+        # is resolved separately for entitlements (from the actual signing
+        # identity) and for Info.plist substitution (from a different,
+        # more ambiguous source), so the two can silently disagree when a
+        # keychain holds more than one codesigning identity.
+        # $(DEVELOPMENT_TEAM) is one explicit build setting, so both places
+        # that read it agree by construction.
+        BokashiAppGroupIdentifier: $(DEVELOPMENT_TEAM).com.snaka.Bokashi
         CFBundleURLTypes:
           - CFBundleURLName: com.snaka.Bokashi
             CFBundleURLSchemes: [bokashi]

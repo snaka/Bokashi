@@ -6,7 +6,7 @@
 	<false/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>$(TeamIdentifierPrefix)com.snaka.Bokashi</string>
+		<string>$(DEVELOPMENT_TEAM).com.snaka.Bokashi</string>
 	</array>
 </dict>
 </plist>
