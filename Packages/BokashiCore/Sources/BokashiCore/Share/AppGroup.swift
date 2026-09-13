@@ -1,9 +1,12 @@
 import Foundation
 
 public enum AppGroup {
-    /// Published by `project.yml` as `$(TeamIdentifierPrefix)com.snaka.Bokashi`
-    /// in both bundles, so the entitlement and this lookup cannot drift
-    /// apart and neither can the app and the extension.
+    /// Published by `project.yml` as `$(DEVELOPMENT_TEAM).com.snaka.Bokashi`
+    /// in both bundles. `$(DEVELOPMENT_TEAM)` is one explicit build setting
+    /// that both the entitlement and this plist key derive from, so they
+    /// cannot drift apart the way `$(TeamIdentifierPrefix)` did: that
+    /// variable is resolved from different sources in the entitlement and
+    /// Info.plist substitution paths, and let the two disagree silently.
     public static var identifier: String? {
         Bundle.main.object(forInfoDictionaryKey: "BokashiAppGroupIdentifier") as? String
     }
