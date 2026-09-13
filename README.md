@@ -25,6 +25,7 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Feature | Status |
 |---|---|
 | Menubar app + global hotkeys | ✅ |
+| Share menu integration | ✅ |
 | Full-screen / window / region capture | ✅ |
 | Editor with clipboard-first save flow | ✅ |
 | Annotation tools (arrow / box / ellipse / line) | ✅ |
@@ -36,6 +37,12 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Developer ID signed + notarized releases | ✅ |
 | Homebrew Cask install (`snaka/tap/bokashi`) | ✅ |
 | Auto-update via Sparkle | Planned (later) |
+
+> **Enabling the Share menu entry.** macOS does not turn third-party
+> share extensions on automatically. After installing Bokashi, tick it
+> once under System Settings → General → Login Items & Extensions →
+> Sharing. It then appears in the Share menu of any app that shares
+> images.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for the full plan and
 [CHANGELOG.md](CHANGELOG.md) for release history.
