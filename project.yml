@@ -31,6 +31,8 @@ targets:
     sources:
       - path: Bokashi
     dependencies:
+      - target: BokashiShare
+        embed: true
       - package: BokashiCore
       - package: KeyboardShortcuts
       - package: Sparkle
@@ -79,3 +81,33 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Bokashi/Bokashi.entitlements
         COMBINE_HIDPI_IMAGES: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  BokashiShare:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: BokashiShare
+    dependencies:
+      - package: BokashiCore
+    info:
+      path: BokashiShare/Info.plist
+      properties:
+        CFBundleDisplayName: Bokashi
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        BokashiAppGroupIdentifier: $(DEVELOPMENT_TEAM).com.snaka.Bokashi
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: ShareViewController
+          NSExtensionAttributes:
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsImageWithMaxCount: 1
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.snaka.Bokashi.Share
+        PRODUCT_NAME: BokashiShare
+        CODE_SIGN_STYLE: Manual
+        DEVELOPMENT_TEAM: Z9MLDKXDEQ
+        CODE_SIGN_IDENTITY: 6070D8E483D0D6268727E48298FF9B4612B08A23
+        PROVISIONING_PROFILE_SPECIFIER: ""
+        CODE_SIGN_ENTITLEMENTS: BokashiShare/BokashiShare.entitlements
