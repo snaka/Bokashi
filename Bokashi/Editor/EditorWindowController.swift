@@ -57,7 +57,7 @@ final class EditorWindowController: NSWindowController, NSWindowDelegate {
         window.center()
 
         Task { @MainActor [state, image, autoMask] in
-            AppleIntelligenceSensitiveRegionDetector.prewarmIfNeeded()
+            TextSensitiveRegionDetector.prewarmIfNeeded()
             await state.runOCR(on: image)
             if autoMask {
                 // Silent on empty: auto-mask runs because the toggle is

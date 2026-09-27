@@ -13,37 +13,37 @@ enum AutoMasker {
         observations: [OCRRunner.TextObservation],
         customTerms: [String]
     ) async -> [Detection] {
-        // Order is dedup priority: deterministic detectors first so their
-        // precise rects win over near-duplicate AI findings.
-        var detectors: [any SensitiveRegionDetector] = [
-            OCRSensitiveRegionDetector(observations: observations, customTerms: customTerms)
-        ]
+        // Order is dedup priority: text findings first so their precise
+        // glyph rects win over overlapping face rects.
         let settings = DetectionSettings.shared
+        var detectors: [any SensitiveRegionDetector] = [
+            TextSensitiveRegionDetector(
+                observations: observations,
+                customTerms: customTerms,
+                usesLanguageModel: settings.aiDetectionEnabled
+            )
+        ]
         if settings.faceMaskingEnabled {
             detectors.append(FaceSensitiveRegionDetector())
         }
-        if settings.aiDetectionEnabled, AppleIntelligenceSensitiveRegionDetector.isModelAvailable {
-            detectors.append(AppleIntelligenceSensitiveRegionDetector(observations: observations))
-        }
 
-        var labeled: [(region: DetectedRegion, detectorIdentifier: String)] = []
+        var regions: [DetectedRegion] = []
         for detector in detectors {
             do {
-                let regions = try await detector.detect(in: image)
-                labeled.append(contentsOf: regions.map { ($0, detector.identifier) })
+                regions += try await detector.detect(in: image)
             } catch {
                 continue
             }
         }
 
-        let kept = RegionDeduplicator.keptIndices(of: labeled.map(\.region))
+        let kept = RegionDeduplicator.keptIndices(of: regions)
         return kept.map { index in
             Detection(
                 annotation: Annotation(
-                    kind: .mosaic(rect: labeled[index].region.rect),
+                    kind: .mosaic(rect: regions[index].rect),
                     style: .defaultOutline
                 ),
-                detectorIdentifier: labeled[index].detectorIdentifier
+                detectorIdentifier: regions[index].label
             )
         }
     }
