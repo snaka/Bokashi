@@ -100,11 +100,28 @@ final class EditorState {
         AnnotationStyle(color: color, lineWidth: lineWidth, filled: tool.isFilled)
     }
 
+    /// Where the current eraser gesture started; the eraser draws no draft.
+    @ObservationIgnored
+    private var eraserPoint: CGPoint?
+
+    /// Image-pixel slack around a stroke for the eraser to count as a hit.
+    // ponytail: fixed in image pixels, so it feels tighter on large Retina captures shown scaled down; pass the canvas scale in if that bites.
+    private static let eraserTolerance: CGFloat = 12
+
     func updateDraft(start: CGPoint, current: CGPoint) {
+        if tool == .eraser {
+            eraserPoint = start
+            return
+        }
         draft = tool.makeAnnotation(from: start, to: current, style: currentStyle)
     }
 
     func commitDraft() {
+        if let point = eraserPoint {
+            eraserPoint = nil
+            erase(at: point)
+            return
+        }
         defer { draft = nil }
         guard let candidate = draft else { return }
 
@@ -125,6 +142,15 @@ final class EditorState {
 
         guard isMeaningful(candidate) else { return }
         addAnnotation(candidate)
+    }
+
+    /// Removes the topmost annotation under the point, auto-masks included.
+    private func erase(at imagePoint: CGPoint) {
+        guard let hit = annotations.last(where: {
+            $0.isHit(by: imagePoint, tolerance: Self.eraserTolerance)
+        }) else { return }
+        removeAnnotation(id: hit.id)
+        undoManager?.setActionName("Erase Annotation")
     }
 
     private func textRect(at imagePoint: CGPoint) -> CGRect? {

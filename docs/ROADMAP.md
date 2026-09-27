@@ -75,8 +75,6 @@ folded into a release prep PR; what actually shipped is recorded in
 - Mosaic block-size presets (small / medium / large)
 - Text annotation tool (typed labels / captions on top of the image,
   with font-size and color controls)
-- Eraser for placed masks (click a mosaic annotation to remove it,
-  including ones added by auto-mask)
 - Temporarily highlight masked regions in the editor (toggle to
   visualize which areas are masked, for last-mile coverage check
   before export)

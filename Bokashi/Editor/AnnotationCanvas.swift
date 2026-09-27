@@ -1,3 +1,4 @@
+import AppKit
 import BokashiCore
 import CoreGraphics
 import SwiftUI
@@ -58,9 +59,50 @@ struct AnnotationCanvas: View {
                         state.commitDraft()
                     }
             )
+            // Re-set on every move: AppKit resets the cursor as the pointer
+            // travels, and `.pointerStyle(.image(...))` did not take effect.
+            .onContinuousHover { phase in
+                switch phase {
+                case .active:
+                    (state.tool == .eraser ? Self.eraserCursor : NSCursor.arrow).set()
+                case .ended:
+                    NSCursor.arrow.set()
+                }
+            }
         }
         .background(Color.black.opacity(0.7))
     }
+
+    /// A black eraser with a white outline, so it stays visible on dark
+    /// screenshots and the black letterbox as well as on light ones. The
+    /// symbol's rubbing end is its bottom-left corner, which is where a click
+    /// lands (cursor hot spots are measured from the top left).
+    private static let eraserCursor: NSCursor = {
+        func symbol(_ color: NSColor) -> NSImage? {
+            let config = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
+                .applying(.init(paletteColors: [color]))
+            return NSImage(systemSymbolName: "eraser", accessibilityDescription: "Eraser")?
+                .withSymbolConfiguration(config)
+        }
+        guard let black = symbol(.black), let white = symbol(.white) else { return .arrow }
+
+        let outline: CGFloat = 1.5
+        let size = NSSize(
+            width: black.size.width + outline * 2,
+            height: black.size.height + outline * 2
+        )
+        let image = NSImage(size: size, flipped: false) { _ in
+            let origin = NSPoint(x: outline, y: outline)
+            for dx in [-outline, 0, outline] {
+                for dy in [-outline, 0, outline] where dx != 0 || dy != 0 {
+                    white.draw(at: NSPoint(x: origin.x + dx, y: origin.y + dy), from: .zero, operation: .sourceOver, fraction: 1)
+                }
+            }
+            black.draw(at: origin, from: .zero, operation: .sourceOver, fraction: 1)
+            return true
+        }
+        return NSCursor(image: image, hotSpot: NSPoint(x: outline + 1, y: size.height - outline - 1))
+    }()
 
     private func displayedImageRect(in size: CGSize) -> CGRect {
         let imageW = CGFloat(image.width)
