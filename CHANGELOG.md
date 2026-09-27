@@ -5,6 +5,57 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2026-09-28
+
+Bokashi now finds Japanese personal names when it auto-masks a
+screenshot, and it can open images shared to it from any app's Share
+menu.
+
+### Added
+
+- **Share menu integration.** Bokashi appears in the macOS Share menu;
+  an image shared from any app opens in the editor with the usual
+  annotation and masking tools. Auto-mask follows the existing toggle,
+  as capture and clipboard import do. (#42)
+- **More kinds of sensitive text are detected:** postal codes, Japanese
+  My Number (verified by its check digit), and API keys, tokens and
+  secrets — found either by a published prefix or by the name that
+  introduces them, so `AWS_SECRET_ACCESS_KEY=…` masks the value and
+  leaves the key name readable. (#43)
+
+### Changed
+
+- **Text detection now uses [privmask](https://github.com/snaka/privmask).**
+  Japanese personal names were effectively never found before, because
+  Apple's `NLTagger` has no Japanese named-entity model. On Macs with
+  Apple Intelligence, the on-device model is now asked for Japanese
+  names only, and each candidate is checked against a family-name list
+  before it is masked. The model is no longer asked for everything at
+  once, which is where false positives such as port numbers read as
+  addresses came from. Bare digit runs are only treated as phone
+  numbers at Japanese lengths with a leading `0`, so order numbers and
+  timestamps stay readable. (#43)
+
+### Privacy
+
+- Images sent via the Share menu are written to Bokashi's App Group
+  container until Bokashi next launches and imports them. This is the
+  one exception to Bokashi never writing a screenshot to disk unless
+  you ask. (#42)
+- All detection still runs on device.
+
+### Notes
+
+- macOS leaves third-party share extensions switched off. Enable
+  Bokashi once under System Settings → General → Login Items &
+  Extensions → Sharing. (#42)
+- Usernames / `@handles` and credit-card numbers are no longer detected
+  automatically; the previous broad model prompt covered them loosely.
+  They are tracked upstream in snaka/privmask#25 and #26. Mask them by
+  hand or add them as custom terms meanwhile. (#43)
+- English-only text is no longer sent to the on-device model; English
+  names are still found by `NLTagger`. (#43)
+
 ## [0.10.0] - 2026-09-12
 
 Bokashi can now mask an image it did not capture itself. Anything on
@@ -171,6 +222,7 @@ Settings.
   changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
   normal signed appcast flow.
 
+[0.11.0]: https://github.com/snaka/Bokashi/releases/tag/v0.11.0
 [0.10.0]: https://github.com/snaka/Bokashi/releases/tag/v0.10.0
 [0.9.1]: https://github.com/snaka/Bokashi/releases/tag/v0.9.1
 [0.9.0]: https://github.com/snaka/Bokashi/releases/tag/v0.9.0
