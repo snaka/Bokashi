@@ -5,6 +5,21 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2026-09-28
+
+Auto-masks can now be removed one at a time.
+
+### Added
+
+- **Eraser tool.** A new toolbar tool removes the annotation you click,
+  including masks added by auto-mask, so a wrong detection no longer
+  means undoing the whole batch. Masks and filled shapes are hit
+  anywhere inside; outlines, lines and arrows only near their stroke,
+  so something drawn inside an outline stays reachable. Where
+  annotations overlap, the topmost one goes. Undo brings it back. The
+  pointer turns into an outlined eraser while the tool is selected.
+  (#45)
+
 ## [0.11.0] - 2026-09-28
 
 Bokashi now finds Japanese personal names when it auto-masks a
@@ -222,6 +237,7 @@ Settings.
   changes; the v0.7.0 → v0.8.0 update goes through Sparkle's
   normal signed appcast flow.
 
+[0.12.0]: https://github.com/snaka/Bokashi/releases/tag/v0.12.0
 [0.11.0]: https://github.com/snaka/Bokashi/releases/tag/v0.11.0
 [0.10.0]: https://github.com/snaka/Bokashi/releases/tag/v0.10.0
 [0.9.1]: https://github.com/snaka/Bokashi/releases/tag/v0.9.1
