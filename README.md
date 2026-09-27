@@ -11,6 +11,26 @@
 
 **Status:** v0.3.0 — adds on-device sensitive-info detection (one-click and click-to-mask) on top of the v0.2.0 mosaic flow.
 
+## Sensitive-info detection
+
+One click on **Detect** (or the auto-mask toggle) finds and masks personal
+information in a screenshot, entirely on device. Japanese text is a first-class
+target: names, phone numbers and addresses written the way Japanese documents
+actually write them.
+
+| Before | After |
+|---|---|
+| ![A Japanese incident report with names, a phone number, an email, an address and an AWS secret key in plain text](docs/images/detection-before.png) | ![The same report with those values mosaicked, and the commit hash, version, port, IP, order number and timestamp left readable](docs/images/detection-after.png) |
+
+Names, the phone number, the email, the postal code and address, the AWS secret
+(the key name stays readable) and `John Smith` are masked. The commit hash,
+version, port, IP address, order number, timestamp and role words below the
+divider are left alone — masking those would ruin the screenshot.
+
+Text detection is powered by [privmask](https://github.com/snaka/privmask):
+`NSDataDetector` and patterns for the deterministic kinds, and Apple
+Intelligence for Japanese personal names on eligible Macs.
+
 ## Why another screenshot tool?
 
 Existing OSS macOS screenshot tools either feel dated, are non-native (Electron / Qt), or lack thoughtful annotation and privacy features. Bokashi aims to be:
@@ -31,7 +51,7 @@ Existing OSS macOS screenshot tools either feel dated, are non-native (Electron 
 | Annotation tools (arrow / box / ellipse / line) | ✅ |
 | Color & stroke-width pickers, undo / redo | ✅ |
 | Manual mosaic masking | ✅ |
-| On-device sensitive-info detection (email / phone / address / name, plus faces/avatars and Apple Intelligence-enhanced detection on eligible Macs) | ✅ |
+| On-device sensitive-info detection (email / phone / postal code / address / name / My Number / API keys and secrets, plus faces/avatars; Japanese names via Apple Intelligence on eligible Macs) | ✅ |
 | Click-to-mask any OCR'd text region | ✅ |
 | Auto-mask sensitive info (menubar toggle) | ✅ |
 | Developer ID signed + notarized releases | ✅ |
