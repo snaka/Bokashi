@@ -23,6 +23,9 @@ packages:
   Sparkle:
     url: https://github.com/sparkle-project/Sparkle
     from: 2.6.0
+  privmask:
+    url: https://github.com/snaka/privmask
+    minorVersion: 0.4.0
 
 targets:
   Bokashi:
@@ -36,6 +39,8 @@ targets:
       - package: BokashiCore
       - package: KeyboardShortcuts
       - package: Sparkle
+      - package: privmask
+        product: PrivMask
     info:
       path: Bokashi/Info.plist
       properties:

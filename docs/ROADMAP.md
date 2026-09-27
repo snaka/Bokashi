@@ -54,11 +54,12 @@ a tagged GitHub release where useful.
 - [x] Auto-mask-on-capture toggle in the menubar (opt-in, persisted)
 - [x] **v0.3.0 release on GitHub Releases**
 
-Detector classes still on the wish list for later: credit-card-like
-sequences, IP addresses, AWS-key-like strings, Japanese My Number.
-`NSDataDetector` already covers most non-email patterns at a higher
-quality than regex would, so further detectors get evaluated case by
-case rather than as a single batch.
+Text detection has since moved to [privmask](https://github.com/snaka/privmask)'s
+`DetectionPipeline`, which adds postal codes, My Number, credentials, and
+Japanese personal names via the on-device model (`NLTagger` has no
+Japanese NER). Still on the wish list: credit-card-like sequences and
+usernames/handles, which the previous broad AI prompt covered loosely.
+IP addresses are left alone on purpose, as in privmask.
 
 ## Backlog
 
