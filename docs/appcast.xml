@@ -123,5 +123,18 @@
         type="application/octet-stream"
         sparkle:edSignature="Fp3sQJdqp+vTF01I2bl3ABo1VtDAj1LreEPxd1ul1qnalA/ubpe77kfumlUZ3gtHEpx5pPU0kEVhY1LVBxQ3DQ=="/>
     </item>
+      <item>
+      <title>v0.13.0</title>
+      <link>https://github.com/snaka/Bokashi/releases/tag/v0.13.0</link>
+      <pubDate>Mon, 05 Oct 2026 23:33:15 +0000</pubDate>
+      <sparkle:version>18</sparkle:version>
+      <sparkle:shortVersionString>0.13.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/snaka/Bokashi/releases/download/v0.13.0/Bokashi-0.13.0.dmg"
+        length="2392551"
+        type="application/octet-stream"
+        sparkle:edSignature="LIBKfK6RT/juHT/KfOGVvpbnT3XCvpVrkGbFO3UNx8NpL8XAo3ICcQGg0nqdazP0C762xhrRVR2cy0E9MxG1AA=="/>
+    </item>
   </channel>
 </rss>
