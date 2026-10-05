@@ -207,6 +207,8 @@ jobs:
             homepage "https://github.com/snaka/Bokashi"
 
             depends_on macos: :tahoe
+            # Brings the Japanese name model, which the app does not bundle.
+            depends_on formula: "snaka/tap/privmask"
 
             app "Bokashi.app"
 

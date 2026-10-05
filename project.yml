@@ -25,7 +25,7 @@ packages:
     from: 2.6.0
   privmask:
     url: https://github.com/snaka/privmask
-    minorVersion: 0.4.0
+    minorVersion: 0.5.0
 
 targets:
   Bokashi:

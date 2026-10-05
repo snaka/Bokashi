@@ -57,7 +57,9 @@ a tagged GitHub release where useful.
 Text detection has since moved to [privmask](https://github.com/snaka/privmask)'s
 `DetectionPipeline`, which adds postal codes, My Number, credentials, and
 Japanese personal names via the on-device model (`NLTagger` has no
-Japanese NER). Still on the wish list: credit-card-like sequences and
+Japanese NER). Since privmask 0.5.0, the NER model installed with the privmask
+CLI finds those names without Apple Intelligence; it is not bundled, to
+keep the app small. Still on the wish list: credit-card-like sequences and
 usernames/handles, which the previous broad AI prompt covered loosely.
 IP addresses are left alone on purpose, as in privmask.
 
