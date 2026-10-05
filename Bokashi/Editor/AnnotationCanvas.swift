@@ -152,6 +152,7 @@ struct AnnotationCanvas: View {
         switch source {
         case "ocr": return .blue
         case "appleIntelligence": return .orange
+        case "ner": return .purple
         case "face": return .green
         default: return .gray
         }

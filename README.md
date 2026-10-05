@@ -29,7 +29,9 @@ divider are left alone — masking those would ruin the screenshot.
 
 Text detection is powered by [privmask](https://github.com/snaka/privmask):
 `NSDataDetector` and patterns for the deterministic kinds, and Apple
-Intelligence for Japanese personal names on eligible Macs.
+Intelligence for Japanese personal names on eligible Macs. With the privmask
+CLI installed (`brew install snaka/tap/privmask`), Bokashi also uses its
+Japanese name model, so names are found without Apple Intelligence too.
 
 ## Why another screenshot tool?
 

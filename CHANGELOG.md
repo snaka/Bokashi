@@ -5,6 +5,25 @@ All notable changes to Bokashi are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Japanese names can be found without Apple Intelligence.** With the
+  privmask CLI installed (`brew install snaka/tap/privmask`), Bokashi
+  uses the Japanese name model that comes with it. The model is not
+  bundled, so the app stays small; without the CLI nothing changes.
+  The Homebrew cask now depends on the privmask formula, so
+  `brew install --cask snaka/tap/bokashi` brings the model along.
+  Apple Intelligence still adds to it when enabled. The debug overlay
+  draws findings from the name model alone in purple.
+
+### Fixed
+
+- Fewer false positives from privmask 0.5.0: hostnames, job names and
+  English product names are no longer masked as personal names, and
+  later mentions of a name already found are masked too.
+
 ## [0.12.0] - 2026-09-28
 
 Auto-masks can now be removed one at a time.
