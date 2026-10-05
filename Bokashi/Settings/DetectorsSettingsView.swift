@@ -36,7 +36,7 @@ struct DetectorsSettingsView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Developer").font(.caption).foregroundStyle(.secondary)
                 Toggle("Highlight mask source in editor", isOn: $dev.highlightMaskSource)
-                Text("Outlines auto-detected mosaics with a colored dashed border in the editor: blue = OCR / regex / NLTagger, orange = Apple Intelligence, green = faces.")
+                Text("Outlines auto-detected mosaics with a colored dashed border in the editor: blue = OCR / regex / NLTagger, orange = Apple Intelligence, purple = privmask name model, green = faces.")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
